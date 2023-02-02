@@ -12,7 +12,6 @@ import com.fieldright.fr.entity.dto.DepoimentoDTO;
 import com.fieldright.fr.entity.dto.Loja;
 import com.fieldright.fr.entity.dto.UserCompraDTO;
 import com.fieldright.fr.entity.dto.UserDTO;
-import com.fieldright.fr.entity.enums.Status;
 import com.fieldright.fr.entity.security.UserAuthenticated;
 import com.fieldright.fr.mail.EMailSender;
 import com.fieldright.fr.repository.CidadeAtuacaoRepository;
@@ -29,6 +28,7 @@ import com.fieldright.fr.service.interfaces.PictureService;
 import com.fieldright.fr.service.interfaces.SuperCategoryService;
 import com.fieldright.fr.service.interfaces.UserService;
 import com.fieldright.fr.util.StringUtil;
+import com.fieldright.fr.util.enums.StatusVenda;
 import com.fieldright.fr.util.enums.TipoVeiculo;
 import com.fieldright.fr.util.exception.CountryNotSupportedException;
 import com.fieldright.fr.util.exception.UserAlreadyExistException;
@@ -330,9 +330,9 @@ public class UserServiceImpl implements UserService {
         return BigDecimal.ZERO;
     }
     @Override
-    public Response<Page<UserCompraDTO>> findByFilter(long usuarioLojaId, Status status, Pageable pageable) {
+    public Response<Page<UserCompraDTO>> findByFilter(long usuarioLojaId, StatusVenda status, Pageable pageable) {
 
-        Page<Object[]> objs = userRepository.findByFilters(usuarioLojaId,status.getValue(),pageable);
+        Page<Object[]> objs = userRepository.findByFilters(usuarioLojaId,status.getText(),pageable);
         Page<UserCompraDTO> dtos = null;
         dtos = objs.map(Object -> {
             return UserCompraDTO.builder().id(Long.parseLong(Object[1].toString()))

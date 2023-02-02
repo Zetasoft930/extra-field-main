@@ -3,11 +3,11 @@ package com.fieldright.fr.controller.implementation;
 import com.fieldright.fr.controller.interfaces.UserController;
 import com.fieldright.fr.entity.dto.ContaDTO;
 import com.fieldright.fr.entity.dto.UserCompraDTO;
-import com.fieldright.fr.entity.enums.Status;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.security.util.JwtUserUtil;
 import com.fieldright.fr.service.interfaces.ContaService;
 import com.fieldright.fr.service.interfaces.UserService;
+import com.fieldright.fr.util.enums.StatusVenda;
 import com.fieldright.fr.util.form.NewPasswordForm;
 import com.fieldright.fr.util.form.SingUpForm;
 import com.fieldright.fr.util.form.UpdateForm;
@@ -85,7 +85,7 @@ public class UserControllerImpl implements UserController {
                                                                                                Pageable pageable) {
 
         Response<Page<UserCompraDTO>> response =  userService.findByFilter(usuarioId,
-                Status.FINALIZADA,
+                StatusVenda.FINALIZADA,
                 pageable);
 
       return   new ResponseEntity<>(response, response.getStatus());

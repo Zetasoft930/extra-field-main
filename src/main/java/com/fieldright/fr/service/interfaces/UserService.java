@@ -4,10 +4,10 @@ import com.fieldright.fr.entity.*;
 import com.fieldright.fr.entity.dto.Loja;
 import com.fieldright.fr.entity.dto.UserCompraDTO;
 import com.fieldright.fr.entity.dto.UserDTO;
-import com.fieldright.fr.entity.enums.Status;
 import com.fieldright.fr.entity.security.UserAuthenticated;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.security.dto.TokenDTO;
+import com.fieldright.fr.util.enums.StatusVenda;
 import com.fieldright.fr.util.enums.TipoVeiculo;
 import com.fieldright.fr.util.form.NewPasswordForm;
 import com.fieldright.fr.util.form.SingUpForm;
@@ -53,5 +53,5 @@ public interface UserService {
     Response<Page<Loja>> getLojas(String name, long category, Pageable pageable);
 
 
-    Response<Page<UserCompraDTO>> findByFilter(long usuarioLojaId, Status status, Pageable pageable);
+    Response<Page<UserCompraDTO>> findByFilter(long usuarioLojaId, StatusVenda status, Pageable pageable);
 }
