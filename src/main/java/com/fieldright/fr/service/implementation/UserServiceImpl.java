@@ -323,7 +323,7 @@ public class UserServiceImpl implements UserService {
     {
         try{
 
-            return   BigDecimal.valueOf(Long.parseLong(objs[index].toString()));
+            return (BigDecimal) objs[index];
 
         }catch (Exception e){ }
 
@@ -360,6 +360,23 @@ public class UserServiceImpl implements UserService {
                 .withErrors(null)
                 .build();
 
+    }
+
+    @Override
+    public Response<BigDecimal> findByVendedorFilter(long usuarioLojaId, StatusVenda status) {
+
+        Optional<BigDecimal> objs = userRepository.findCountVendaByVendedor(usuarioLojaId,status.getText());
+        BigDecimal total = BigDecimal.ZERO;
+
+        if(objs.isPresent())
+        {
+            total = objs.get();
+        }
+        return new Response.Builder()
+                .withStatus(HttpStatus.OK)
+                .withData(total)
+                .withErrors(null)
+                .build();
     }
 
     private void updateUser(Usuario usuario, UpdateForm form) {

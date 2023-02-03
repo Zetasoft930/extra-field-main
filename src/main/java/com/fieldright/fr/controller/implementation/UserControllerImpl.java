@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping(value = "/api/user/v1")
@@ -89,5 +90,15 @@ public class UserControllerImpl implements UserController {
                 pageable);
 
       return   new ResponseEntity<>(response, response.getStatus());
+    }
+
+    @GetMapping(value = "/countVendaByLoja")
+    @Override
+    public ResponseEntity<Response<BigDecimal>> getCountVendaFinalizadaByVendedorFilters(@RequestParam(name = "userLoja",required = true) long usuarioId) {
+
+        Response<BigDecimal> response =  userService.findByVendedorFilter(usuarioId,
+                StatusVenda.FINALIZADA);
+
+        return   new ResponseEntity<>(response, response.getStatus());
     }
 }

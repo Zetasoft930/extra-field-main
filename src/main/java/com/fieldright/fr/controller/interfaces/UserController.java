@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Api(
@@ -82,6 +83,9 @@ public interface UserController {
     @ResponseStatus(HttpStatus.OK)
     Response<HttpStatus> updateExponentPushToken(String exponentPushToken, long userId);
 
-    @ApiOperation(value = "Get countUserCompra by user loja", notes = "Este endpoint deve ser mostrar os clientes que mas compram nunhum certa loja")
+    @ApiOperation(value = "Get countUserCompra by user loja", notes = "Este endpoint deve ser mostrar os clientes que mas compram em um certa loja")
     ResponseEntity<Response<Page<UserCompraDTO>>> getCountUserCompraFinalizadaByFilters(long usuarioId, Pageable pageable);
+
+    @ApiOperation(value = "Get countUserVendedor by user loja", notes = "Este endpoint deve ser mostrar o total valor que um vendor(loja) efectuou")
+    ResponseEntity<Response<BigDecimal>> getCountVendaFinalizadaByVendedorFilters(long usuarioId);
 }
