@@ -323,9 +323,17 @@ public class UserServiceImpl implements UserService {
     {
         try{
 
-            return (BigDecimal) objs[index];
+            if(objs[index] != null) {
+                return (BigDecimal) objs[index];
+            }
 
-        }catch (Exception e){ }
+        }catch ( ClassCastException e){
+
+            return BigDecimal.valueOf(Double.parseDouble(objs[index].toString()));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
 
         return BigDecimal.ZERO;
     }
