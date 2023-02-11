@@ -35,9 +35,9 @@ public interface ProductService {
 
     void internalSave(Product product);
 
-    void internalUpdateForNewCompra(long productId, int qtdComprada);
+    void internalUpdateForNewCompra(long productId, int qtdComprada,String unidadeMedida);
 
-    void internalCanceleReservaProduto(long productId, int qtdComprada);
+    void internalCanceleReservaProduto(long productId, int qtdComprada,String unidadeMedida);
 
     void internalUpdateForComprasCanceladas(List<Compra> compras);
 
@@ -56,4 +56,6 @@ public interface ProductService {
     ProductFracaoDTO newFracao(ProductFracaoDTO dto);
     
     List<String> listFracao(long productId);
+
+    public Product findById(Long id);
 }

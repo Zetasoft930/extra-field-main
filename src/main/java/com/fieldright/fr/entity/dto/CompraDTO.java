@@ -17,7 +17,7 @@ public class CompraDTO {
     private long id;
     private String status;
     private long productId;
-    private int qtdComprada;
+    private Integer qtdComprada;
     private long vendedorId;
     private long compradorId;
     private BigDecimal vlPago;

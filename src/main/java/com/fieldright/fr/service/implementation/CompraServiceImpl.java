@@ -3,8 +3,7 @@ package com.fieldright.fr.service.implementation;
 import com.fieldright.fr.entity.*;
 import com.fieldright.fr.entity.architecture.MoneyConfig;
 import com.fieldright.fr.entity.architecture.TabelaFrete;
-import com.fieldright.fr.entity.dto.CarrinhoDTO;
-import com.fieldright.fr.entity.dto.CompraDTO;
+import com.fieldright.fr.entity.dto.*;
 import com.fieldright.fr.entity.emis.TransactionGPO;
 import com.fieldright.fr.entity.security.UserAuthenticated;
 import com.fieldright.fr.mail.EMailSender;
@@ -57,6 +56,7 @@ public class CompraServiceImpl implements CompraService {
 	private final static String QUANTIDADE_DISPONIVEL_IGUAL_A_UM = "Restou apenas uma unidade do produto: ";
 	private final static String key = "fieldright/frete/gratis";
 
+
 	@Autowired
 	private PushSender pushSender;
 	@Autowired
@@ -91,6 +91,9 @@ public class CompraServiceImpl implements CompraService {
 	private ParametrosRepository parametroRepository;
 	@Autowired
 	private PromocaoFreteRepository promocaoFreteRepository;
+
+	@Autowired
+	private UnidadeMedidaConverterService unidadeMedidaConverterService;
 
 	public CompraServiceImpl(CompraRepository compraRepository, ProductService productService, UserService userService,
 			TabelaFreteRepository tabelaFreteRepository, MoneyConfigRepository moneyConfigRepository,
@@ -151,8 +154,8 @@ public class CompraServiceImpl implements CompraService {
 				List<Compra> comprasSalvas = reserveProdutosESalveCompras(compras);
 				Long carrinhoId = gereESalveCarrinho(carrin, authenticated, comprasSalvas);
 				userService.internalAdicioneComprasParaComprador(carrinhoId, authenticated.getId());
-				String codigoPagamento = pagSeguroService.efetuaPagamentoDeProdutos(XmlCreator.createXmlBody((Comprador) usuario, compras, carrinhoId, carrin.getTaxaEntrega()));
-				//String codigoPagamento = "CARTAO_DEBITO";
+				//String codigoPagamento = pagSeguroService.efetuaPagamentoDeProdutos(XmlCreator.createXmlBody((Comprador) usuario, compras, carrinhoId, carrin.getTaxaEntrega()));
+				String codigoPagamento = "CARTAO_DEBITO";
 				carrinhoService.internalAddCodigoPagamento(carrinhoId, codigoPagamento);
 
 				sendNotification(comprasSalvas);
@@ -235,8 +238,11 @@ public class CompraServiceImpl implements CompraService {
 		List<Compra> compraList = new ArrayList<>();
 		for (Compra compra : compras) {
 			Product product = productService.internalFindById(compra.getProductId());
+
+			BigDecimal novaQtdCompra =  getQtCompraCalc(product.getUnidadeMedida(),compra.getUnidadeMedida(),compra.getQtdComprada());
+
 			lancaExecaoCasoNaoTiverProdutoNoEstoque(compra, product);
-			product.setQtdReservada(product.getQtdReservada() + compra.getQtdComprada());
+			product.setQtdReservada(product.getQtdReservada().add(novaQtdCompra));
 			productService.internalSave(product);
 
 			Endereco enderecoEntrega = enderecoService.saveEndereco(compra.getEnderecoEntrega()).getData();
@@ -293,7 +299,7 @@ public class CompraServiceImpl implements CompraService {
 		Carrinho carrinho = carrinhoService.internalFindById(reference);
 		if (carrinho.getStatusCompra().equals(StatusCompra.AGUARDANDO_PAGAMENTO)) {
 			for (Compra c : carrinho.getCompras()) {
-				productService.internalUpdateForNewCompra(c.getProductId(), c.getQtdComprada());
+				productService.internalUpdateForNewCompra(c.getProductId(), c.getQtdComprada(),c.getUnidadeMedida());
 				c.setStatus(StatusCompra.AGUARDANDO_CONFIRMACAO);
 				internalNewVenda(c, reference, c.getVendedorId());
 			}
@@ -387,8 +393,11 @@ public class CompraServiceImpl implements CompraService {
 		Usuario vendedor = userService.internalFindUserById(product.getVendedorId());
 		List<String> errorList = new ArrayList<>();
 
-		errorList.add(confereQuantidadeDisponivel(product, dto.getQtdComprada()));
-		errorList.add(confereValorPago(product, dto.getQtdComprada(), dto.getVlPago()));
+		//Calcula novo de acordo com a unidade de medida.aplicacao do calculo 3 simples
+		BigDecimal novaQtdComprada = getQtCompraCalc(product.getUnidadeMedida(),dto.getUnidadeMedida(),dto.getQtdComprada());
+
+		errorList.add(confereQuantidadeDisponivel(product, dto.getQtdComprada(),dto.getUnidadeMedida()));
+		errorList.add(confereValorPago(product, novaQtdComprada, dto.getVlPago()));
 
 		for (String err : errorList)
 			if (err != null)
@@ -414,14 +423,45 @@ public class CompraServiceImpl implements CompraService {
 		return pictures;
 	}
 
-	private String confereValorPago(Product product, int qtdComprada, BigDecimal vlPago) {
-		BigDecimal vlCerto = (product.getPrice().multiply(BigDecimal.valueOf(qtdComprada)));
+	private String confereValorPago(Product product, BigDecimal qtdComprada, BigDecimal vlPago) {
+		BigDecimal vlCerto = (product.getPrice().multiply(qtdComprada));
+
 		return (vlCerto.compareTo(vlPago)) == 0 ? null : DIVERGENCIA_NO_VALOR_A_SER_PAGO_MESSAGE + product.getName();
 	}
 
+
+
 	private String confereQuantidadeDisponivel(Product product, int qtdComprada) {
-		return (qtdComprada <= product.qtdDisponivelParaCompra()) ? null
+		return (qtdComprada <= product.qtdDisponivelParaCompra().doubleValue()) ? null
 				: QUANTIDADE_DISPONIVEL_INSUFICIENTE_MESSAGE + product.getName();
+	}
+
+	private String confereQuantidadeDisponivel(Product product, int qtdComprada,String unidadeMedidaCompra) {
+
+		BigDecimal novaQtd = getQtCompraCalc(product.getUnidadeMedida(),unidadeMedidaCompra,qtdComprada);
+		return (novaQtd.doubleValue() <= product.qtdDisponivelParaCompra().doubleValue()) ? null
+				: QUANTIDADE_DISPONIVEL_INSUFICIENTE_MESSAGE + product.getName();
+	}
+
+	public BigDecimal getQtCompraCalc(String unidadeProduto,String unidadeCompra,int qtdComprada){
+
+
+		if(!unidadeProduto.equalsIgnoreCase(unidadeCompra)) {
+			UnidadeMedidaConverter unidadeMedidaConverter = unidadeMedidaConverterService.findByUnidadeSimbolo(unidadeCompra, unidadeProduto);
+
+			if (unidadeMedidaConverter != null) {
+
+
+				BigDecimal qtd =  unidadeMedidaConverter.getEquivale().multiply(BigDecimal.valueOf(qtdComprada));
+
+				System.out.println("qtatidade::"+qtd);
+				return qtd;
+			}
+
+		}
+
+	  return BigDecimal.valueOf(qtdComprada);
+
 	}
 
 	@Override
@@ -526,7 +566,8 @@ public class CompraServiceImpl implements CompraService {
 			Date dataVencimento = getDataVencimentoPagamento(carrinho.getCompras().get(0).getCreatedAt());
 			if (dataVencimento.before(Calendar.getInstance().getTime())) {
 				for (Compra compra : carrinho.getCompras()) {
-					productService.internalCanceleReservaProduto(compra.getProductId(), compra.getQtdComprada());
+
+					productService.internalCanceleReservaProduto(compra.getProductId(), compra.getQtdComprada(),compra.getUnidadeMedida());
 					this.internalCanceleCompra(compra);
 				}
 				carrinhoService.internalCanceleCarrinho(carrinho);
@@ -552,7 +593,7 @@ public class CompraServiceImpl implements CompraService {
 		long reference = Long.valueOf(referenceId);
 		Carrinho carrinho = carrinhoService.internalFindById(reference);
 		for (Compra c : carrinho.getCompras()) {
-			productService.internalCanceleReservaProduto(c.getProductId(), c.getQtdComprada());
+			productService.internalCanceleReservaProduto(c.getProductId(), c.getQtdComprada(),c.getUnidadeMedida());
 			c.setStatus(StatusCompra.CANCELADA);
 		}
 		carrinho.setStatusCompra(StatusCompra.CANCELADA);
@@ -607,7 +648,7 @@ public class CompraServiceImpl implements CompraService {
 
 		for (CompraDTO compra : comprasDaLoja) {
 			Product product = productService.internalFindById(compra.getProductId());
-			pesoCubadoTotal += (product.getPesoCubado() * compra.getQtdComprada());
+			pesoCubadoTotal += (product.getPesoCubado() * compra.getQtdComprada().doubleValue());
 		}
 		return getValorEmRelacaoAoPesoCubado(pesoCubadoTotal);
 	}
@@ -679,17 +720,18 @@ public class CompraServiceImpl implements CompraService {
 	}
 
 	public void sendNotification(List<Compra> compras) {
-		int stock_disponivel, min_stock;
+		BigDecimal stock_disponivel;
+				int min_stock;
 		for (Compra compra : compras) {
 			Product product = productService.internalFindById(compra.getProductId());
 			String name = product.getName();
 			stock_disponivel = product.qtdDisponivelParaCompra();
 			min_stock = product.getMin_stock();
-			if (stock_disponivel <= min_stock && stock_disponivel > 1 && min_stock > 1) {
+			if (stock_disponivel.doubleValue() <= min_stock && stock_disponivel.doubleValue() > 1 && min_stock > 1) {
 				pushSender.avisaEstoque(compra.getVendedorId(), QUANTIDADE_DISPONIVEL_INFERIOR_QTD_MINIMA + name);
-			} else if (stock_disponivel == 1) {
+			} else if (stock_disponivel.doubleValue() == 1) {
 				pushSender.avisaEstoque(compra.getVendedorId(), QUANTIDADE_DISPONIVEL_IGUAL_A_UM + name);
-			} else if (stock_disponivel == 0) {
+			} else if (stock_disponivel.doubleValue() == 0) {
 				pushSender.avisaEstoque(compra.getVendedorId(), STOCK_ESGOTADO + name);
 			} else {
 			pushSender.avisaEstoque(compra.getVendedorId(), "Notificacao de teste para o produto: "+name);
@@ -729,4 +771,80 @@ public class CompraServiceImpl implements CompraService {
 		return returnHttpBigDecimalInResponse(HttpStatus.OK, newPrice.round(new MathContext(4, RoundingMode.UP)), null);
 
 	}
+
+	@Override
+	public BigDecimal newprice(Long produtoId) {
+
+
+		Product product = productService.findById(produtoId);
+
+		if (product != null) {
+
+			UnidadeMedidaConverter unidadeMedidaConverter = unidadeMedidaConverterService.findByUnidadeSimbolo(product.getUnidadeMedida());
+
+			if (unidadeMedidaConverter != null) {
+
+				if(unidadeMedidaConverter.getEquivale().doubleValue() > 0 ) {
+					return product.getPrice().divide(unidadeMedidaConverter.getEquivale());
+				}
+
+			}
+
+		}
+
+		return product.getPrice();
+	}
+
+	@Override
+	public Response<PrecoDTO> newprice(ProductPriceDTO productPriceDTO) {
+
+		try{
+
+			Product product = productService.findById(productPriceDTO.getProductId());
+			PrecoDTO precoDTO = null;
+
+
+			if (product != null) {
+
+
+				precoDTO = new PrecoDTO(product.getPrice(),BigDecimal.ZERO,product.getUnidadeMedida(),productPriceDTO.getUnidadeMedida());
+
+
+				UnidadeMedidaConverter unidadeMedidaConverter =
+						unidadeMedidaConverterService
+								.findByUnidadeSimbolo(
+										product.getUnidadeMedida(),
+										productPriceDTO.getUnidadeMedida()
+								);
+
+				if (unidadeMedidaConverter != null) {
+
+					if(unidadeMedidaConverter.getEquivale().doubleValue() > 0 ) {
+						BigDecimal novoPreco =  product.getPrice().divide(unidadeMedidaConverter.getEquivale());
+						precoDTO.setNovoPreco(novoPreco);
+					}
+
+				}
+
+			}
+
+
+
+			return new Response.Builder()
+					.withStatus(HttpStatus.OK)
+					.withData(precoDTO)
+					.withErrors(null)
+					.build();
+
+		}catch (Exception ex){
+			return new Response.Builder()
+					.withStatus(HttpStatus.NOT_FOUND)
+					.withData(null)
+					.withErrors(Arrays.asList(ex.getMessage()))
+					.build();
+		}
+	}
+
+
+
 }

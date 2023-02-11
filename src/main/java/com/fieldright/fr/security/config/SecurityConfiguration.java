@@ -40,6 +40,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/api/lojas/v1",
             "/api/category/v1",
             "/api/superCategory/v1"
+            //"/api/compras/v1/fracaoPrice"
     };
 
     @Autowired

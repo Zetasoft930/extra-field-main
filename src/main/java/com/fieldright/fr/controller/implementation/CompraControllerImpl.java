@@ -4,6 +4,8 @@ import com.fieldright.fr.controller.interfaces.CompraController;
 import com.fieldright.fr.entity.Avaliacao;
 import com.fieldright.fr.entity.dto.CarrinhoDTO;
 import com.fieldright.fr.entity.dto.CompraDTO;
+import com.fieldright.fr.entity.dto.PrecoDTO;
+import com.fieldright.fr.entity.dto.ProductPriceDTO;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.security.util.JwtUserUtil;
 import com.fieldright.fr.service.interfaces.CompraService;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import javax.validation.Valid;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -65,7 +68,7 @@ public class CompraControllerImpl implements CompraController {
          compraService.sendPush(JwtUserUtil.getUserAuthenticated(), mensagem);
 
     }
-
+/*
     @Override
     @GetMapping(
             value = "/fracaoPrice"
@@ -73,4 +76,14 @@ public class CompraControllerImpl implements CompraController {
 	public Response<BigDecimal> price(@RequestBody CompraDTO dto) {
 		 return compraService.price(dto);
 	}
+*/
+
+    @Override
+    @GetMapping(
+            value = "/fracaoPrice"
+    )
+    public Response<PrecoDTO> newPrice(@RequestBody @Valid ProductPriceDTO dto) {
+
+        return compraService.newprice(dto);
+    }
 }

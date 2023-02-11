@@ -3,6 +3,8 @@ package com.fieldright.fr.controller.interfaces;
 import com.fieldright.fr.entity.Avaliacao;
 import com.fieldright.fr.entity.dto.CarrinhoDTO;
 import com.fieldright.fr.entity.dto.CompraDTO;
+import com.fieldright.fr.entity.dto.PrecoDTO;
+import com.fieldright.fr.entity.dto.ProductPriceDTO;
 import com.fieldright.fr.response.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,5 +52,10 @@ public interface CompraController {
 
     Response<HttpStatus> evaluate(Avaliacao avaliacao, long lojaId);
     
-    Response<BigDecimal> price(CompraDTO dto);
+    //Response<BigDecimal> price(CompraDTO dto);
+    @ApiOperation(
+            value = "New Price",
+            notes = "Este endpoint retorna novo preco do produto com base na unidade de medida selecionada."
+    )
+    Response<PrecoDTO> newPrice(ProductPriceDTO dto);
 }

@@ -2,8 +2,7 @@ package com.fieldright.fr.service.interfaces;
 
 import com.fieldright.fr.entity.Avaliacao;
 import com.fieldright.fr.entity.Compra;
-import com.fieldright.fr.entity.dto.CarrinhoDTO;
-import com.fieldright.fr.entity.dto.CompraDTO;
+import com.fieldright.fr.entity.dto.*;
 import com.fieldright.fr.entity.emis.TransactionGPO;
 import com.fieldright.fr.entity.security.UserAuthenticated;
 import com.fieldright.fr.response.Response;
@@ -45,4 +44,7 @@ public interface CompraService {
     void sendPush(UserAuthenticated authenticated, String mensagem);
     
     Response<BigDecimal> price(CompraDTO dto);
+    BigDecimal newprice(Long produtoId);
+    Response<PrecoDTO> newprice(ProductPriceDTO productPriceDTO);
+    public BigDecimal getQtCompraCalc(String unidadeProduto,String unidadeCompra,int qtdComprada);
 }

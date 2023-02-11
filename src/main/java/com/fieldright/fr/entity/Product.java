@@ -26,10 +26,10 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
     private long vendedorId;
-    private int qtdReservada = 0;
-    private int tpPreparacaoDias;
-    private int tpPreparacaoHoras;
-    private int tpPreparacaoMinutos;
+    private BigDecimal qtdReservada = BigDecimal.ZERO;
+    private Integer tpPreparacaoDias;
+    private Integer tpPreparacaoHoras;
+    private Integer tpPreparacaoMinutos;
     @NotNull(message = "Obrigatório informar o peso do produto (kg)")
     private double peso;//kg
     @NotNull(message = "Obrigatório informar a altura do produto (cm)")
@@ -61,12 +61,13 @@ public class Product {
     private Endereco enderecoLoja;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> pictures;
-    private Integer quantityAvailable = 0;
+    private BigDecimal quantityAvailable = BigDecimal.ZERO;
     private Integer min_stock = 0;
     @Enumerated(EnumType.STRING)
     private StatusProduct status;
 
-    public int qtdDisponivelParaCompra() {
-        return quantityAvailable - qtdReservada;
+    public BigDecimal qtdDisponivelParaCompra() {
+
+        return quantityAvailable.subtract(qtdReservada);
     }
 }

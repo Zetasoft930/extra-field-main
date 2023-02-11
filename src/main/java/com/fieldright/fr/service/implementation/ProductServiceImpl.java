@@ -1,13 +1,6 @@
 package com.fieldright.fr.service.implementation;
 
-import com.fieldright.fr.entity.AvaliacaoProduct;
-import com.fieldright.fr.entity.Compra;
-import com.fieldright.fr.entity.Comprador;
-import com.fieldright.fr.entity.Product;
-import com.fieldright.fr.entity.ProductFracao;
-import com.fieldright.fr.entity.PromocaoProduct;
-import com.fieldright.fr.entity.Usuario;
-import com.fieldright.fr.entity.Vendedor;
+import com.fieldright.fr.entity.*;
 import com.fieldright.fr.entity.dto.AvaliacaoProductDTO;
 import com.fieldright.fr.entity.dto.ProductDTO;
 import com.fieldright.fr.entity.dto.ProductFracaoDTO;
@@ -88,6 +81,9 @@ public class ProductServiceImpl implements ProductService {
     private ProductFracaoRepository fracaoRepository;
     @Autowired
     private ProductFracaoMapper fracaoMapper;
+
+    @Autowired
+    private UnidadeMedidaConverterService unidadeMedidaConverterService;
 
     /**
      * * Salvar o produto
@@ -193,7 +189,7 @@ public class ProductServiceImpl implements ProductService {
         String name = newProduct.getName() == null ? oldProduct.getName() : newProduct.getName();
         String description = newProduct.getDescription() == null ? oldProduct.getDescription() : newProduct.getDescription();
         BigDecimal price = newProduct.getPrice() == null ? oldProduct.getPrice() : newProduct.getPrice();
-        Integer quantityAvailable = newProduct.getQuantityAvailable() == null ? oldProduct.getQuantityAvailable() : newProduct.getQuantityAvailable();
+        BigDecimal quantityAvailable = newProduct.getQuantityAvailable() == null ? oldProduct.getQuantityAvailable() : newProduct.getQuantityAvailable();
         String category = getCategoriaValida(newProduct.getCategory(), oldProduct.getCategory());
         String unidadeMedida = getUnidadeMedidaValida(newProduct.getUnidadeMedida(), oldProduct.getUnidadeMedida());
         Integer min_stock = newProduct.getMin_stock() == null ? oldProduct.getMin_stock() : newProduct.getMin_stock();
@@ -338,18 +334,36 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void internalUpdateForNewCompra(long productId, int qtdComprada) {
+    public void internalUpdateForNewCompra(long productId, int qtdComprada,String unidadeMedidaCompra) {
         Product product = productRepository.findById(productId).get();
-        product.setQtdReservada(product.getQtdReservada() - qtdComprada);
-        product.setQuantityAvailable(product.getQuantityAvailable() - qtdComprada);
+
+        BigDecimal novaQtdCompra = getQtCompraCalc(product.getUnidadeMedida(),unidadeMedidaCompra,qtdComprada);
+
+        product.setQtdReservada(product.getQtdReservada().subtract(novaQtdCompra));
+        product.setQuantityAvailable(product.getQuantityAvailable().subtract(novaQtdCompra));
 
         productRepository.save(product);
     }
+    public BigDecimal getQtCompraCalc(String unidadeProduto,String unidadeCompra,int qtdComprada){
 
+
+        UnidadeMedidaConverter unidadeMedidaConverter =	unidadeMedidaConverterService.findByUnidadeSimbolo(unidadeCompra,unidadeProduto);
+
+        if(unidadeMedidaConverter != null){
+
+            return unidadeMedidaConverter.getEquivale().multiply(BigDecimal.valueOf(qtdComprada));
+
+        }
+
+        return BigDecimal.valueOf(qtdComprada);
+
+    }
     @Override
-    public void internalCanceleReservaProduto(long productId, int qtdComprada) {
+    public void internalCanceleReservaProduto(long productId, int qtdComprada,String unidadeMedidaCompra) {
         Product product = productRepository.findById(productId).get();
-        product.setQtdReservada(product.getQtdReservada() - qtdComprada);
+
+        BigDecimal novaQtdCompra = getQtCompraCalc(product.getUnidadeMedida(),unidadeMedidaCompra,qtdComprada);
+        product.setQtdReservada(product.getQtdReservada().subtract(novaQtdCompra));
         productRepository.save(product);
     }
 
@@ -365,7 +379,7 @@ public class ProductServiceImpl implements ProductService {
     public void internalUpdateForComprasCanceladas(List<Compra> compras) {
         for (Compra compra : compras) {
             Product product = productRepository.findById(compra.getProductId()).get();
-            product.setQuantityAvailable(product.getQuantityAvailable() + compra.getQtdComprada());
+            product.setQuantityAvailable(product.getQuantityAvailable().add(BigDecimal.valueOf(compra.getQtdComprada())));
             productRepository.save(product);
         }
     }
@@ -582,5 +596,14 @@ public class ProductServiceImpl implements ProductService {
 		}
 		return list;
 	}
+
+    @Override
+    public Product findById(Long id) {
+        Optional<Product> product =  productRepository.findById(id);
+        if(product.isPresent()){
+            return product.get();
+        }
+        throw new RuntimeException("Produto nao foi encontrado");
+    }
 
 }
