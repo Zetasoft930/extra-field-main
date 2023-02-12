@@ -12,8 +12,8 @@ public interface UnidadeMedidaConverterService {
     public Response<UnidadeMedidaConverterDTO> save(UnidadeMedidaConverterDTO dto);
 
     public Response<Page<UnidadeMedidaConverterDTO>> findAll();
-    public Response<UnidadeMedidaConverterDTO> findByUnidadeOrigem(String unidade);
+   // public Response<UnidadeMedidaConverterDTO> findByUnidadeOrigem(String unidade);
 
-    public UnidadeMedidaConverter findByUnidadeSimbolo(String unidade);
+   // public UnidadeMedidaConverter findByUnidadeSimbolo(String unidade);
     public UnidadeMedidaConverter findByUnidadeSimbolo(String unidadeOrigem,String unidadeDestino);
 }

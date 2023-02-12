@@ -49,7 +49,7 @@ public class JwtTokenUtil {
     @Nullable
     public String recuperaTokenDo(HttpServletRequest request) {
         String token = request.getHeader(AUTH_HEADER); //o token vem no campo "Autorisation" do header da requisição
-
+System.out.println("token >>> "+token);
         if (token != null && token.startsWith(BEARER_PREFIX)) {
             token = token.substring(7);//recuperar o token tirando o "Bearer " da frente
         }

@@ -51,7 +51,7 @@ public class UnidadeMedidaConverterServiceImpl implements UnidadeMedidaConverter
         return null;
     }
 
-    @Override
+   /* @Override
     public Response<UnidadeMedidaConverterDTO> findByUnidadeOrigem(String unidade) {
 
         UnidadeMedidaConverterDTO result = null;
@@ -69,9 +69,9 @@ public class UnidadeMedidaConverterServiceImpl implements UnidadeMedidaConverter
                 .withErrors(null)
                 .build();
 
-    }
+    }*/
 
-    @Override
+    /*@Override
     public UnidadeMedidaConverter findByUnidadeSimbolo(String unidade) {
 
         Optional<UnidadeMedidaConverter> model = repository.findByUnidadeOrigem(unidade);
@@ -81,7 +81,7 @@ public class UnidadeMedidaConverterServiceImpl implements UnidadeMedidaConverter
             return model.get();
         }
         return null;
-    }
+    }*/
 
     @Override
     public UnidadeMedidaConverter findByUnidadeSimbolo(String unidadeOrigem,String unidadeDestino) {

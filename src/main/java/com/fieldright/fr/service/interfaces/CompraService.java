@@ -44,7 +44,7 @@ public interface CompraService {
     void sendPush(UserAuthenticated authenticated, String mensagem);
     
     Response<BigDecimal> price(CompraDTO dto);
-    BigDecimal newprice(Long produtoId);
+
     Response<PrecoDTO> newprice(ProductPriceDTO productPriceDTO);
     public BigDecimal getQtCompraCalc(String unidadeProduto,String unidadeCompra,int qtdComprada);
 }

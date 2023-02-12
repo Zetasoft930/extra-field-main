@@ -207,6 +207,7 @@ public class CompraServiceImpl implements CompraService {
 		BigDecimal vlTotal = BigDecimal.valueOf(0).setScale(2);
 		for (CompraDTO c : carrin.getCompras()) {
 			compras.add(gereCompra(c, usuario, errors));
+
 			vlTotal = vlTotal.add(c.getVlPago()).setScale(2);
 		}
 		return vlTotal;
@@ -241,7 +242,7 @@ public class CompraServiceImpl implements CompraService {
 
 			BigDecimal novaQtdCompra =  getQtCompraCalc(product.getUnidadeMedida(),compra.getUnidadeMedida(),compra.getQtdComprada());
 
-			lancaExecaoCasoNaoTiverProdutoNoEstoque(compra, product);
+			lancaExecaoCasoNaoTiverProdutoNoEstoque(product,novaQtdCompra);
 			product.setQtdReservada(product.getQtdReservada().add(novaQtdCompra));
 			productService.internalSave(product);
 
@@ -252,8 +253,10 @@ public class CompraServiceImpl implements CompraService {
 		return compraList;
 	}
 
-	private void lancaExecaoCasoNaoTiverProdutoNoEstoque(Compra c, Product product) {
-		String error = confereQuantidadeDisponivel(product, c.getQtdComprada());
+	private void lancaExecaoCasoNaoTiverProdutoNoEstoque(Product product,BigDecimal novaQuatidade) {
+
+
+		String error = confereQuantidadeDisponivel(product, novaQuatidade);
 		if (error != null)
 			throw new RuntimeException(error);
 	}
@@ -396,22 +399,29 @@ public class CompraServiceImpl implements CompraService {
 		//Calcula novo de acordo com a unidade de medida.aplicacao do calculo 3 simples
 		BigDecimal novaQtdComprada = getQtCompraCalc(product.getUnidadeMedida(),dto.getUnidadeMedida(),dto.getQtdComprada());
 
-		errorList.add(confereQuantidadeDisponivel(product, dto.getQtdComprada(),dto.getUnidadeMedida()));
+		errorList.add(confereQuantidadeDisponivel(product, novaQtdComprada));
 		errorList.add(confereValorPago(product, novaQtdComprada, dto.getVlPago()));
 
 		for (String err : errorList)
 			if (err != null)
 				errors.add(err);
 
-		return new Compra.Builder().withProductId(product.getId()).withProductName(product.getName())
-				.withProductDescription(product.getDescription()).withProductPrice(product.getPrice())
+		return new Compra.Builder()
+				.withProductId(product.getId())
+				.withProductName(product.getName())
+				.withProductDescription(product.getDescription())
+				.withProductPrice(dto.getVlPago().divide(BigDecimal.valueOf(dto.getQtdComprada())))
 				.withVendedorId(vendedor.getId()).withVendedorName(vendedor.getFullName())
 				.withVendedorPhone(vendedor.getPhone()).withCompradorId(comprador.getId())
 				.withCompradorName(comprador.getFullName()).withCompradorPhone(comprador.getPhone())
-				.withUnidadeMedida(product.getUnidadeMedida()).withVlPago(dto.getVlPago())
-				.withQtdComprada(dto.getQtdComprada()).withEnderecoLoja(product.getEnderecoLoja())
-				.withEnderecoEntrega(dto.getEnderecoEntrega()).withDistanciaEntrega(dto.getDistanciaEntrega())
+				.withVlPago(dto.getVlPago())
+				.withQtdComprada(dto.getQtdComprada())
+				.withUnidadeMedida(dto.getUnidadeMedida())
+				.withEnderecoLoja(product.getEnderecoLoja())
+				.withEnderecoEntrega(dto.getEnderecoEntrega())
+				.withDistanciaEntrega(dto.getDistanciaEntrega())
 				.withStatus(StatusCompra.AGUARDANDO_PAGAMENTO)
+				.withUnidadeMedida(dto.getUnidadeMedida())
 				.withObservacao(dto.getObservacao()).withFracao(dto.getFracao())
 				.withFormaPagamento(FormaPagamento.valueOf(dto.getFormaPagamento().toUpperCase()))
 				.addProductPictures(retornaImagensProduto(product)).build();
@@ -431,19 +441,19 @@ public class CompraServiceImpl implements CompraService {
 
 
 
-	private String confereQuantidadeDisponivel(Product product, int qtdComprada) {
+	/*private String confereQuantidadeDisponivel(Product product, int qtdComprada) {
 		return (qtdComprada <= product.qtdDisponivelParaCompra().doubleValue()) ? null
 				: QUANTIDADE_DISPONIVEL_INSUFICIENTE_MESSAGE + product.getName();
-	}
+	}*/
 
-	private String confereQuantidadeDisponivel(Product product, int qtdComprada,String unidadeMedidaCompra) {
+	private String confereQuantidadeDisponivel(Product product, BigDecimal qtdComprada) {
 
-		BigDecimal novaQtd = getQtCompraCalc(product.getUnidadeMedida(),unidadeMedidaCompra,qtdComprada);
-		return (novaQtd.doubleValue() <= product.qtdDisponivelParaCompra().doubleValue()) ? null
+		return (qtdComprada.doubleValue() <= product.qtdDisponivelParaCompra().doubleValue()) ? null
 				: QUANTIDADE_DISPONIVEL_INSUFICIENTE_MESSAGE + product.getName();
 	}
 
 	public BigDecimal getQtCompraCalc(String unidadeProduto,String unidadeCompra,int qtdComprada){
+
 
 
 		if(!unidadeProduto.equalsIgnoreCase(unidadeCompra)) {
@@ -452,9 +462,9 @@ public class CompraServiceImpl implements CompraService {
 			if (unidadeMedidaConverter != null) {
 
 
-				BigDecimal qtd =  unidadeMedidaConverter.getEquivale().multiply(BigDecimal.valueOf(qtdComprada));
 
-				System.out.println("qtatidade::"+qtd);
+				BigDecimal qtd = unidadeMedidaConverter.getEquivale().multiply(BigDecimal.valueOf(qtdComprada));
+
 				return qtd;
 			}
 
@@ -761,7 +771,7 @@ public class CompraServiceImpl implements CompraService {
 	@Override
 	public void sendPush(UserAuthenticated authenticated, String mensagem) {
 		pushSender.avisaEstoque(authenticated.getId(), mensagem);
-		System.out.println("testeeeee");
+
 	}
 
 	@Override
@@ -772,28 +782,6 @@ public class CompraServiceImpl implements CompraService {
 
 	}
 
-	@Override
-	public BigDecimal newprice(Long produtoId) {
-
-
-		Product product = productService.findById(produtoId);
-
-		if (product != null) {
-
-			UnidadeMedidaConverter unidadeMedidaConverter = unidadeMedidaConverterService.findByUnidadeSimbolo(product.getUnidadeMedida());
-
-			if (unidadeMedidaConverter != null) {
-
-				if(unidadeMedidaConverter.getEquivale().doubleValue() > 0 ) {
-					return product.getPrice().divide(unidadeMedidaConverter.getEquivale());
-				}
-
-			}
-
-		}
-
-		return product.getPrice();
-	}
 
 	@Override
 	public Response<PrecoDTO> newprice(ProductPriceDTO productPriceDTO) {

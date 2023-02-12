@@ -330,7 +330,7 @@ public class CompraServiceImplTest {
         Product product = umProdutoCom(vendedorId, 0d);
         product.setName(nome);
         product.setPrice(preco);
-        product.setQuantityAvailable(qtdDisponivel);
+        product.setQuantityAvailable(BigDecimal.valueOf(qtdDisponivel));
         product.setPictures(new ArrayList<>());
         return product;
     }
