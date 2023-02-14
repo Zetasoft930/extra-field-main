@@ -9,9 +9,11 @@ import com.fieldright.fr.entity.dto.ProductDTO;
 import com.fieldright.fr.entity.dto.ProductFracaoDTO;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.security.util.JwtUserUtil;
+import com.fieldright.fr.service.interfaces.CSVService;
 import com.fieldright.fr.service.interfaces.ProductService;
 import lombok.AllArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,9 @@ import java.util.List;
 public class ProductControllerImpl implements ProductController {
 
     private ProductService productService;
+
+    @Autowired
+    private CSVService csvService;
 
     @Override
     @PostMapping(
@@ -116,5 +121,11 @@ public class ProductControllerImpl implements ProductController {
 		return productService.listFracao(productId);
 	}
 
-	
+    @PostMapping(value = "/importProductCsv")
+    @Override
+    public Response uploadFile(@RequestParam("file") MultipartFile file) {
+        return csvService.saveProduct(file);
+    }
+
+
 }

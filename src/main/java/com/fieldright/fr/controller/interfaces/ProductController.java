@@ -94,4 +94,8 @@ public interface ProductController {
 	ProductFracaoDTO create(ProductFracaoDTO dto);
 	
 	List<String> listFracao(long productId);
+
+    @ApiOperation(value = "Import produto", notes = "Importar produtos em massa usando ficheiro CSV")
+    @ResponseStatus(HttpStatus.CREATED)
+    Response uploadFile(MultipartFile file);
 }

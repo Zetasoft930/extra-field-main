@@ -68,15 +68,7 @@ public class CompraControllerImpl implements CompraController {
          compraService.sendPush(JwtUserUtil.getUserAuthenticated(), mensagem);
 
     }
-/*
-    @Override
-    @GetMapping(
-            value = "/fracaoPrice"
-    )
-	public Response<BigDecimal> price(@RequestBody CompraDTO dto) {
-		 return compraService.price(dto);
-	}
-*/
+
 
     @Override
     @GetMapping(

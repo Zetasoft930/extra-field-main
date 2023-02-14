@@ -70,4 +70,11 @@ public class Product {
 
         return quantityAvailable.subtract(qtdReservada);
     }
+
+    public boolean isValid(){
+
+
+        return peso >= 0 &&  altura >= 0 && altura >= 0 && !name.trim().isEmpty()
+                && !country.trim().isEmpty() && !category.isEmpty() && !unidadeMedida.trim().isEmpty();
+    }
 }

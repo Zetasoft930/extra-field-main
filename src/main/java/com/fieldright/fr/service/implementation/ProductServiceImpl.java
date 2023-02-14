@@ -31,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -604,6 +605,16 @@ public class ProductServiceImpl implements ProductService {
             return product.get();
         }
         throw new RuntimeException("Produto nao foi encontrado");
+    }
+
+    @Transactional
+    @Override
+    public void internalSave(List<Product> products) {
+
+       for(Product p : products)
+           {
+               productRepository.save(p);
+           }
     }
 
 }

@@ -797,21 +797,25 @@ public class CompraServiceImpl implements CompraService {
 
 				precoDTO = new PrecoDTO(product.getPrice(),BigDecimal.ZERO,product.getUnidadeMedida(),productPriceDTO.getUnidadeMedida());
 
+                if(!product.getUnidadeMedida().equalsIgnoreCase(productPriceDTO.getUnidadeMedida())) {
 
-				UnidadeMedidaConverter unidadeMedidaConverter =
-						unidadeMedidaConverterService
-								.findByUnidadeSimbolo(
-										product.getUnidadeMedida(),
-										productPriceDTO.getUnidadeMedida()
-								);
+					UnidadeMedidaConverter unidadeMedidaConverter =
+							unidadeMedidaConverterService
+									.findByUnidadeSimbolo(
+											product.getUnidadeMedida(),
+											productPriceDTO.getUnidadeMedida()
+									);
 
-				if (unidadeMedidaConverter != null) {
+					if (unidadeMedidaConverter != null) {
 
-					if(unidadeMedidaConverter.getEquivale().doubleValue() > 0 ) {
-						BigDecimal novoPreco =  product.getPrice().divide(unidadeMedidaConverter.getEquivale());
-						precoDTO.setNovoPreco(novoPreco);
+						if (unidadeMedidaConverter.getEquivale().doubleValue() > 0) {
+							BigDecimal novoPreco = product.getPrice().divide(unidadeMedidaConverter.getEquivale());
+							precoDTO.setNovoPreco(novoPreco);
+						}
+
 					}
-
+				}else{
+					precoDTO.setNovoPreco(product.getPrice());
 				}
 
 			}

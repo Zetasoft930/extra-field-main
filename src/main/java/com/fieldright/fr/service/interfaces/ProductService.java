@@ -58,4 +58,8 @@ public interface ProductService {
     List<String> listFracao(long productId);
 
     public Product findById(Long id);
+
+
+    void internalSave(List<Product> products);
+
 }
