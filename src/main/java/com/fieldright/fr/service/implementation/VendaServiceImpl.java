@@ -16,9 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VendaServiceImpl implements VendaService {
@@ -197,6 +199,25 @@ public class VendaServiceImpl implements VendaService {
     public void pedidoFinalizado(Long vendaId, UserAuthenticated authenticated) throws PermissionDeniedException {
         validaLojaComEntregadoresProprio(authenticated);
         internalVendaFinalizada(vendaId);
+    }
+
+    //NOVO CODIGO
+    @Override
+    public Response<BigDecimal> countVendaByVendedorAndStatus(long usuarioLojaId, StatusVenda status) {
+
+        Optional<BigDecimal> totalVendaOptional =  vendaRepository.countVendaByVendedorAndStatus(usuarioLojaId,status.getText());
+        BigDecimal totalVenda = BigDecimal.ZERO;
+
+        if(totalVendaOptional.isPresent())
+        {
+            totalVenda = totalVendaOptional.get();
+        }
+
+        return new Response.Builder()
+                .withStatus(HttpStatus.OK)
+                .withData(totalVenda)
+                .withErrors(null)
+                .build();
     }
 
     private void validaLojaComEntregadoresProprio(UserAuthenticated authenticated) {

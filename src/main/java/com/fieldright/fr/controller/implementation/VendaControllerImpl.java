@@ -5,7 +5,9 @@ import com.fieldright.fr.entity.dto.VendaDTO;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.security.util.JwtUserUtil;
 import com.fieldright.fr.service.interfaces.VendaService;
+import com.fieldright.fr.util.enums.StatusVenda;
 import com.fieldright.fr.util.exception.PermissionDeniedException;
+import org.hibernate.engine.spi.Status;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -115,6 +117,13 @@ public class VendaControllerImpl implements VendaController {
         } catch (PermissionDeniedException e) {
             return getResponse(HttpStatus.FORBIDDEN, Collections.singletonList(e.getMessage()));
         }
+    }
+//NOVO CODIGO
+    @GetMapping(path = "/countVendaByVendedorAndStatus")
+    @Override
+    public Response countVendaByVendedorAndStatus(@RequestParam(required = true,name = "userId") Long userIdLoja,
+                                                  @RequestParam(required = true,name = "status",defaultValue = "NOVA") String status) {
+        return vendaService.countVendaByVendedorAndStatus(userIdLoja, StatusVenda.valueOf(status));
     }
 
     private Response getResponse(HttpStatus status, List<String> errors) {

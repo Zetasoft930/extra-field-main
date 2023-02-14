@@ -3,9 +3,11 @@ package com.fieldright.fr.service.interfaces;
 import com.fieldright.fr.entity.dto.VendaDTO;
 import com.fieldright.fr.entity.security.UserAuthenticated;
 import com.fieldright.fr.response.Response;
+import com.fieldright.fr.util.enums.StatusVenda;
 import com.fieldright.fr.util.exception.PermissionDeniedException;
 import org.springframework.http.HttpStatus;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface VendaService {
@@ -25,4 +27,8 @@ public interface VendaService {
     void pedidoACaminho(Long vendaId, UserAuthenticated authenticated) throws PermissionDeniedException;
 
     void pedidoFinalizado(Long vendaId, UserAuthenticated authenticated) throws PermissionDeniedException;
+
+
+    //NOVO CODIGO
+    Response<BigDecimal> countVendaByVendedorAndStatus(long usuarioLojaId, StatusVenda status);
 }

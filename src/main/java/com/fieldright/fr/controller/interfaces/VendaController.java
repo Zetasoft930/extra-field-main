@@ -63,4 +63,11 @@ public interface VendaController {
                     "para informar que o pedido já foi entregue para o endereço do comprador."
     )
     Response pedidoFinalizado(Long vendaId);
+
+//NOVO CODIGO
+    @ApiOperation(
+            value = "total de venda",
+            notes = "Esse endpoint serve para mostrar o total de vendas de um usuario unico/loja. deve ser informado o id do usuario e status da venda."
+    )
+    Response countVendaByVendedorAndStatus(Long userIdLoja,String status);
 }
