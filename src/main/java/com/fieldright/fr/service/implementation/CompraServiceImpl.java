@@ -456,16 +456,20 @@ public class CompraServiceImpl implements CompraService {
 
 
 
-		if(!unidadeProduto.equalsIgnoreCase(unidadeCompra)) {
-			UnidadeMedidaConverter unidadeMedidaConverter = unidadeMedidaConverterService.findByUnidadeSimbolo(unidadeCompra, unidadeProduto);
+		if(unidadeCompra != null) {
 
-			if (unidadeMedidaConverter != null) {
+			if (!unidadeProduto.equalsIgnoreCase(unidadeCompra)) {
+
+				UnidadeMedidaConverter unidadeMedidaConverter = unidadeMedidaConverterService.findByUnidadeSimbolo(unidadeCompra, unidadeProduto);
+
+				if (unidadeMedidaConverter != null) {
 
 
+					BigDecimal qtd = unidadeMedidaConverter.getEquivale().multiply(BigDecimal.valueOf(qtdComprada));
 
-				BigDecimal qtd = unidadeMedidaConverter.getEquivale().multiply(BigDecimal.valueOf(qtdComprada));
+					return qtd;
+				}
 
-				return qtd;
 			}
 
 		}

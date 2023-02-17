@@ -1,13 +1,17 @@
 package com.fieldright.fr.service.implementation;
 
+import com.fieldright.fr.entity.Postagem;
 import com.fieldright.fr.entity.UnidadeMedidaConverter;
+import com.fieldright.fr.entity.dto.PostagemDTO;
 import com.fieldright.fr.entity.dto.UnidadeMedidaConverterDTO;
 import com.fieldright.fr.repository.UnidadeMedidaConverterRepository;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.service.interfaces.UnidadeMedidaConverterService;
+import com.fieldright.fr.util.mapper.UnidadeMedidaConverterMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +23,8 @@ public class UnidadeMedidaConverterServiceImpl implements UnidadeMedidaConverter
     @Autowired
     private UnidadeMedidaConverterRepository repository;
 
-   /* @Autowired
-    private ModelMapper modelMapper;*/
+    @Autowired
+    private UnidadeMedidaConverterMapper unidadeMedidaConverterMapper;
 
 
     @Override
@@ -28,14 +32,16 @@ public class UnidadeMedidaConverterServiceImpl implements UnidadeMedidaConverter
 
 
         UnidadeMedidaConverterDTO result = null;
-      //  UnidadeMedidaConverter model = modelMapper.map(dto,UnidadeMedidaConverter.class);
+        UnidadeMedidaConverter model = unidadeMedidaConverterMapper.toUnidadeMedidaConverter(dto);
 
-     //   if(model != null){
+        if(model != null){
 
 
-         //   model = repository.save(model);
-        //    result = modelMapper.map(model,UnidadeMedidaConverterDTO.class);
-      //  }
+            model = repository.save(model);
+            if(model != null) {
+                result = unidadeMedidaConverterMapper.toUnidadeMedidaConverterDTO(model);
+            }
+        }
 
 
         return new Response.Builder()
@@ -47,41 +53,100 @@ public class UnidadeMedidaConverterServiceImpl implements UnidadeMedidaConverter
     }
 
     @Override
-    public Response<Page<UnidadeMedidaConverterDTO>> findAll() {
-        return null;
-    }
-
-   /* @Override
-    public Response<UnidadeMedidaConverterDTO> findByUnidadeOrigem(String unidade) {
-
-        UnidadeMedidaConverterDTO result = null;
-        Optional<UnidadeMedidaConverter> model = repository.findByUnidadeOrigem(unidade);
-
-        if(model.isPresent()){
+    public Response<UnidadeMedidaConverterDTO> update(Long id, UnidadeMedidaConverterDTO dto) {
 
 
+        Optional<UnidadeMedidaConverter> optional =  repository.findById(id);
 
+        if(optional.isPresent())
+        {
+            UnidadeMedidaConverter modelo = optional.get();
+            unidadeMedidaConverterMapper.toUnidadeMedidaConverter(dto,modelo);
+
+            modelo = repository.save(modelo);
+
+
+            return new Response.Builder()
+                    .withStatus(HttpStatus.OK)
+                    .withData(modelo)
+                    .withErrors(null)
+                    .build();
         }
-
         return new Response.Builder()
                 .withStatus(HttpStatus.OK)
-                .withData(model.orElseThrow())
+                .withData("ID nao invalido")
                 .withErrors(null)
                 .build();
 
-    }*/
+    }
 
-    /*@Override
-    public UnidadeMedidaConverter findByUnidadeSimbolo(String unidade) {
+    @Override
+    public Response delete(Long id) {
 
-        Optional<UnidadeMedidaConverter> model = repository.findByUnidadeOrigem(unidade);
+        Optional<UnidadeMedidaConverter> optional =  repository.findById(id);
 
-        if(model.isPresent())
+        if(optional.isPresent())
         {
-            return model.get();
+            UnidadeMedidaConverter modelo = optional.get();
+
+            repository.delete(modelo);
+
+
+            return new Response.Builder()
+                    .withStatus(HttpStatus.OK)
+                    .withData("Unidade de Equivalencia  eliminada")
+                    .withErrors(null)
+                    .build();
         }
-        return null;
-    }*/
+        return new Response.Builder()
+                .withStatus(HttpStatus.OK)
+                .withData("ID nao invalido")
+                .withErrors(null)
+                .build();
+
+
+    }
+
+    @Override
+    public Response<Page<UnidadeMedidaConverterDTO>> findAll(Pageable pageable) {
+
+
+        Page<UnidadeMedidaConverter> unidadeMedidaConverterPage = null;
+        String mensagem = "Status invalido";
+
+        try {
+
+            unidadeMedidaConverterPage = repository.findAll(pageable);
+
+            Page<UnidadeMedidaConverterDTO> dtos = unidadeMedidaConverterPage.map(p -> {
+                return unidadeMedidaConverterMapper.toUnidadeMedidaConverterDTO(p);
+
+            });
+
+
+            return new Response.Builder()
+                    .withStatus(HttpStatus.OK)
+                    .withData(dtos)
+                    .withErrors(null)
+                    .build();
+
+
+        }catch (Exception ex)
+        {
+            ex.printStackTrace();
+            mensagem = ex.getMessage();
+        }
+
+
+        return new Response.Builder()
+                .withStatus(HttpStatus.NOT_FOUND)
+                .withData(mensagem)
+                .withErrors(null)
+                .build();
+
+    }
+
+
 
     @Override
     public UnidadeMedidaConverter findByUnidadeSimbolo(String unidadeOrigem,String unidadeDestino) {

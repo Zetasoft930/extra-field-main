@@ -13,6 +13,7 @@ import javax.persistence.Id;
 @Getter
 @Setter
 @NoArgsConstructor
+
 public class UnidadeMedida {
 
     @Id
@@ -20,6 +21,10 @@ public class UnidadeMedida {
     private long id;
     private String simbolo;
     private String texto;
+
+    public UnidadeMedida(long id) {
+        this.id = id;
+    }
 
     @Override public String toString() {
         return new StringBuilder()
