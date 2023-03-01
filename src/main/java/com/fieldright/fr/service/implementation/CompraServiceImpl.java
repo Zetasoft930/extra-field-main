@@ -154,8 +154,8 @@ public class CompraServiceImpl implements CompraService {
 				List<Compra> comprasSalvas = reserveProdutosESalveCompras(compras);
 				Long carrinhoId = gereESalveCarrinho(carrin, authenticated, comprasSalvas);
 				userService.internalAdicioneComprasParaComprador(carrinhoId, authenticated.getId());
-				//String codigoPagamento = pagSeguroService.efetuaPagamentoDeProdutos(XmlCreator.createXmlBody((Comprador) usuario, compras, carrinhoId, carrin.getTaxaEntrega()));
-				String codigoPagamento = "CARTAO_DEBITO";
+				String codigoPagamento = pagSeguroService.efetuaPagamentoDeProdutos(XmlCreator.createXmlBody((Comprador) usuario, compras, carrinhoId, carrin.getTaxaEntrega()));
+				//String codigoPagamento = "CARTAO_DEBITO";
 				carrinhoService.internalAddCodigoPagamento(carrinhoId, codigoPagamento);
 
 				sendNotification(comprasSalvas);
