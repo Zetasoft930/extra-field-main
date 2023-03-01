@@ -519,14 +519,23 @@ public class ProductServiceImpl implements ProductService {
 		 * * Só comprador pode avaliar * Só pode ter entre 0 - 5 estrelas
 		 */
 		Usuario comprador = userService.internalFindUserById(authenticated.getId());
-		Vendedor loja = (Vendedor) userService.internalFindUserById(lojaId);
+        Vendedor loja = null;
+		/*try
+        {
+            loja = (Vendedor) userService.internalFindUserById(lojaId);
+        }catch (Exception e)
+        {
+
+        }*/
 		List<String> erros = new ArrayList<>();
 
 		if (comprador.getClass().equals(Comprador.class)) {
 			if (avaliacao.getEstrelas() <= 5 && avaliacao.getEstrelas() >= 0) {
 				avaliacao.setAvaliadorId(authenticated.getId());
 			avaliacaoProductRepository.save(avaliacao);
-				userService.internalUpdateUser(loja);
+            /*if(loja != null) {
+                userService.internalUpdateUser(loja);
+            }*/
 				return returnHttpStatusInResponse(HttpStatus.OK, null);
 			} else {
 				erros.add("A quantidade de estrelas passada não é vpalida");
@@ -536,6 +545,29 @@ public class ProductServiceImpl implements ProductService {
 		}
 		return returnHttpStatusInResponse(HttpStatus.UNAUTHORIZED, erros);
 	}
+    @Override
+    public Response<HttpStatus> evaluate(AvaliacaoProduct avaliacao, UserAuthenticated authenticated) {
+        /**
+         * * Só comprador pode avaliar * Só pode ter entre 0 - 5 estrelas
+         */
+        Usuario comprador = userService.internalFindUserById(authenticated.getId());
+
+        List<String> erros = new ArrayList<>();
+
+        if (comprador.getClass().equals(Comprador.class)) {
+            if (avaliacao.getEstrelas() <= 5 && avaliacao.getEstrelas() >= 0) {
+                avaliacao.setAvaliadorId(authenticated.getId());
+                avaliacaoProductRepository.save(avaliacao);
+
+                return returnHttpStatusInResponse(HttpStatus.OK, null);
+            } else {
+                erros.add("A quantidade de estrelas passada não é vpalida");
+            }
+        } else {
+            erros.add("Avaliações são permitidas somente para compradores");
+        }
+        return returnHttpStatusInResponse(HttpStatus.UNAUTHORIZED, erros);
+    }
 	
 	private Response<HttpStatus> returnHttpStatusInResponse(HttpStatus status, List<String> errors) {
 		return new Response.Builder().withStatus(status).withData(status).withErrors(errors).build();

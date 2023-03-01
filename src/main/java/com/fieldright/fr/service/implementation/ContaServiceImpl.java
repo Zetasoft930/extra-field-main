@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -106,6 +107,11 @@ public class ContaServiceImpl implements ContaService {
         Conta conta = optionalConta.get();
         conta.setSaldo(conta.getSaldo().add(entrega.getValorRemuneracao()));
         contaRepository.save(conta);
+    }
+
+    @Override
+    public List<Conta> findMotoristaNotInHistoricoPagmento() {
+        return contaRepository.findMotoristaNotInHistoricoPagamentoToday();
     }
 
     private Response<ContaDTO> returnAccountDTOInResponse(HttpStatus status, Conta conta, ArrayList<String> errors) {

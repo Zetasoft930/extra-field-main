@@ -3,6 +3,8 @@ package com.fieldright.fr.controller.interfaces;
 
 import java.util.List;
 
+import com.fieldright.fr.entity.dto.HistoricoPagMotoristaDTO;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -38,5 +40,10 @@ public interface MotoristaLojaController {
 	    List<MotoristaLoja> findAllByMotorista(long motorista);
 	    
 	    List<MotoristaLoja> deleteMotoristaLoja(long id);
+
+	@ApiOperation(
+			value = "Historico de Pagamento by motorista"
+	)
+	Response findPagamentoByMotorista(HistoricoPagMotoristaDTO dto, Pageable pageable);
 
 }

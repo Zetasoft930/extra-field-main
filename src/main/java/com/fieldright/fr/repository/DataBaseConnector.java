@@ -16,12 +16,10 @@ public class DataBaseConnector {
             Class.forName("org.postgresql.Driver").newInstance();
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
-            System.err.println("SQLException: " + e.getMessage());
-            System.err.println("SQLState: " + e.getSQLState());
-            System.err.println("VendorError: " + e.getErrorCode());
+
             return null;
         } catch (Exception e) {
-            System.err.println("Falha ao conectar com o banco de dados: " + e);
+
             return null;
         }
     }

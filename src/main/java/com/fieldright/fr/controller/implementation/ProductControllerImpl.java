@@ -5,6 +5,7 @@ import com.fieldright.fr.entity.Avaliacao;
 import com.fieldright.fr.entity.AvaliacaoProduct;
 import com.fieldright.fr.entity.ProductFracao;
 import com.fieldright.fr.entity.dto.AvaliacaoProductDTO;
+import com.fieldright.fr.entity.dto.AvaliacaoProductnNewDTO;
 import com.fieldright.fr.entity.dto.ProductDTO;
 import com.fieldright.fr.entity.dto.ProductFracaoDTO;
 import com.fieldright.fr.response.Response;
@@ -95,10 +96,35 @@ public class ProductControllerImpl implements ProductController {
     @PutMapping(
             value = "/evaluate"
     )
-    public ResponseEntity<Response<HttpStatus>> evaluate(@RequestBody AvaliacaoProduct avaliacao, long lojaId) {
-        Response<HttpStatus> response = productService.evaluate(avaliacao, lojaId, JwtUserUtil.getUserAuthenticated());
+    public ResponseEntity<Response<HttpStatus>> evaluate(@RequestBody AvaliacaoProductnNewDTO avaliacao) {
+
+       AvaliacaoProduct avaliacaoProduct = new AvaliacaoProduct();
+       avaliacaoProduct.setProductId(avaliacao.getProductId());
+       avaliacaoProduct.setComentario(avaliacao.getComentario());
+       avaliacaoProduct.setEstrelas(avaliacao.getEstrelas());
+       avaliacaoProduct.setAvaliadorId(avaliacao.getAvaliadorId());
+
+        Response<HttpStatus> response = productService.evaluate(avaliacaoProduct, JwtUserUtil.getUserAuthenticated());
         return new ResponseEntity<>(response, response.getStatus());
     }
+
+    public ResponseEntity<Response<HttpStatus>> evaluate(@RequestBody AvaliacaoProductnNewDTO avaliacao,long lojaId) {
+
+        AvaliacaoProduct avaliacaoProduct = new AvaliacaoProduct();
+        avaliacaoProduct.setProductId(avaliacao.getProductId());
+        avaliacaoProduct.setComentario(avaliacao.getComentario());
+        avaliacaoProduct.setEstrelas(avaliacao.getEstrelas());
+        avaliacaoProduct.setAvaliadorId(avaliacao.getAvaliadorId());
+
+
+        Response<HttpStatus> response = productService.evaluate(avaliacaoProduct,lojaId, JwtUserUtil.getUserAuthenticated());
+        return new ResponseEntity<>(response, response.getStatus());
+    }
+
+  /*  public ResponseEntity<Response<HttpStatus>> evaluate(@RequestBody AvaliacaoProduct avaliacao, long lojaId) {
+        Response<HttpStatus> response = productService.evaluate(avaliacao, lojaId, JwtUserUtil.getUserAuthenticated());
+        return new ResponseEntity<>(response, response.getStatus());
+    }*/
 
 	@Override
 	public AvaliacaoProductDTO getProductAvaliation(long productId, long avaliadorId) {

@@ -42,11 +42,7 @@ import com.fieldright.fr.repository.UserRepository;
 import com.fieldright.fr.repository.VendaRepository;
 import com.fieldright.fr.repository.VendedorRepository;
 import com.fieldright.fr.response.Response;
-import com.fieldright.fr.service.interfaces.AdminService;
-import com.fieldright.fr.service.interfaces.CompraService;
-import com.fieldright.fr.service.interfaces.ContaService;
-import com.fieldright.fr.service.interfaces.EnderecoService;
-import com.fieldright.fr.service.interfaces.PagSeguroService;
+import com.fieldright.fr.service.interfaces.*;
 import com.fieldright.fr.util.enums.StatusCompra;
 import com.fieldright.fr.util.enums.StatusDepoimento;
 import com.fieldright.fr.util.exception.CountryNotSupportedException;
@@ -145,6 +141,9 @@ public class AdminServiceImpl implements AdminService {
 	
 	@Autowired
 	private PromocaoFreteMapper promocaoFreteMapper;
+
+    @Autowired
+    private HistoricoPagamentoService historicoPagamentoService;
 
     /**
      * Caso o usuário a ativar for um vendedor, adicionar 1 mês na data da próxima desativação.
@@ -399,6 +398,10 @@ public class AdminServiceImpl implements AdminService {
             if (optionalTI.isPresent()) {
                 authorizationCode = optionalTI.get().getAuthorizationCode();
                 podeAutorizar = true;
+
+                //REGISTAR HISTORICO DE PAGAMENTO
+                historicoPagamentoService.saveOrUpdate(conta,podeAutorizar,transferCode);
+
             }
         }
         PagSeguroServiceImpl.JsonResponse jsonResponse = pagSeguroService.autorizaPagamento(authorizationCode);

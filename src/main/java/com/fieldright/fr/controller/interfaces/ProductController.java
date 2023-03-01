@@ -3,10 +3,7 @@ package com.fieldright.fr.controller.interfaces;
 import com.fieldright.fr.entity.Avaliacao;
 import com.fieldright.fr.entity.AvaliacaoProduct;
 import com.fieldright.fr.entity.ProductFracao;
-import com.fieldright.fr.entity.dto.AvaliacaoProductDTO;
-import com.fieldright.fr.entity.dto.ProductDTO;
-import com.fieldright.fr.entity.dto.ProductFracaoDTO;
-import com.fieldright.fr.entity.dto.PromocaoProductDTO;
+import com.fieldright.fr.entity.dto.*;
 import com.fieldright.fr.response.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -84,8 +81,10 @@ public interface ProductController {
 			+ "Será retornada a mesma entidade porém com mais informações.")
 	void newProductList(String path);
 	
-	ResponseEntity<Response<HttpStatus>> evaluate(AvaliacaoProduct avaliacao, long lojaId);
-	
+	ResponseEntity<Response<HttpStatus>> evaluate(AvaliacaoProductnNewDTO avaliacao, long lojaId);
+
+    @ApiOperation(value = "evaluate", notes = "avaliacao de produto")
+    ResponseEntity<Response<HttpStatus>> evaluate(AvaliacaoProductnNewDTO avaliacao);
 	
 	AvaliacaoProductDTO getProductAvaliation(long productId, long avaliadorId);
 	

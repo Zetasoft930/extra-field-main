@@ -4,16 +4,14 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.fieldright.fr.entity.dto.HistoricoPagMotoristaDTO;
+import com.fieldright.fr.service.interfaces.HistoricoPagamentoService;
+import com.fieldright.fr.util.enums.TipoUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.*;
 
 import com.fieldright.fr.controller.interfaces.MotoristaLojaController;
 import com.fieldright.fr.entity.MotoristaLoja;
@@ -34,6 +32,9 @@ public class MotoristaLojaControllerImpl implements MotoristaLojaController {
 	
 	@Autowired
 	private MotoristaLojaMapper motoristaLojaMapper;
+
+	@Autowired
+	private HistoricoPagamentoService historicoPagamentoService;
 	
 	@Override
     @PostMapping(
@@ -70,5 +71,11 @@ public class MotoristaLojaControllerImpl implements MotoristaLojaController {
 		return motoristaLojaService.deleteMotoristaLoja(id, JwtUserUtil.getUserAuthenticated());
 	}
 
-	 
+	@GetMapping(value = "/historico-pagamento")
+	@Override
+	public Response findPagamentoByMotorista(@RequestBody HistoricoPagMotoristaDTO dto, Pageable pageable) {
+		return historicoPagamentoService.findPagamentoByUsuario(dto, TipoUsuario.MOTORISTA,pageable);
+	}
+
+
 }

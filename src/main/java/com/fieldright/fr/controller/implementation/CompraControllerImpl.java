@@ -71,7 +71,7 @@ public class CompraControllerImpl implements CompraController {
 
 
     @Override
-    @GetMapping(
+    @PostMapping(
             value = "/fracaoPrice"
     )
     public Response<PrecoDTO> newPrice(@RequestBody @Valid ProductPriceDTO dto) {

@@ -50,7 +50,9 @@ public interface ProductService {
     Response<Page<ProductDTO>> findByFilters(long loja, LocalDate searchDate, String category, String name, BigDecimal price, boolean maisVendido, String status, Pageable pageable);
 
     Response<HttpStatus> evaluate(AvaliacaoProduct avaliacao, long lojaId, UserAuthenticated authenticated);
-    
+
+    Response<HttpStatus> evaluate(AvaliacaoProduct avaliacao, UserAuthenticated authenticated);
+
     AvaliacaoProductDTO findAvaliacaoProductByProductAndAvaliador(long producto, long avaliador);
     
     ProductFracaoDTO newFracao(ProductFracaoDTO dto);
