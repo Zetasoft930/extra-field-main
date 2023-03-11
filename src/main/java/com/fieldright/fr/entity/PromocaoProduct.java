@@ -33,11 +33,9 @@ public class PromocaoProduct {
 	@CreationTimestamp
 	@Column(updatable = false)
 	private Timestamp createdAt;
-	@CreationTimestamp
-	@Column(updatable = false)
+
 	private Timestamp startDate;
-	@CreationTimestamp
-	@Column(updatable = false)
+
 	private Timestamp endDate;
 	private BigDecimal percentage;
 	private long productId;
