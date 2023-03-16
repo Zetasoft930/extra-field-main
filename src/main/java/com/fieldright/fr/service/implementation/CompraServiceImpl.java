@@ -19,10 +19,13 @@ import com.fieldright.fr.util.enums.StatusCompra;
 import com.fieldright.fr.util.enums.StatusVenda;
 import com.fieldright.fr.util.exception.CountryNotSupportedException;
 import com.fieldright.fr.util.mapper.CarrinhoMapper;
+import com.fieldright.fr.util.mapper.CompraMapper;
 import com.fieldright.fr.util.mapper.XmlCreator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -475,6 +478,28 @@ public class CompraServiceImpl implements CompraService {
 		}
 
 	  return BigDecimal.valueOf(qtdComprada);
+
+	}
+
+	@Override
+	public Response getPedidoByUserAndStatus(Long userIdLoja, StatusVenda status, Pageable pageable) {
+
+
+		Page<CompraDTO> dtos=null;
+		Page<Compra> compras=this.compraRepository.findVendaByVendedorAndStatus(userIdLoja,status.getText(),pageable);
+
+
+		dtos = compras.map(compra -> {
+
+			return CompraMapper.toCompraDTO(compra);
+
+		});
+
+		return new Response.Builder()
+				.withStatus(HttpStatus.OK)
+				.withData(dtos)
+				.withErrors(null)
+				.build();
 
 	}
 

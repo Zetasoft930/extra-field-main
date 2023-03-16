@@ -10,10 +10,15 @@ import java.util.List;
 
 @Component
 public class CompraMapper {
-    private MapperFacade facade;
+    private static  MapperFacade facade;
 
     public CompraMapper() {
         this.facade = new ConfigurableMapper();
+    }
+
+    public static CompraDTO toCompraDTO(Compra compra) {
+
+        return facade.map(compra, CompraDTO.class);
     }
 
     public List<CompraDTO> toCompraDTOS(List<Compra> compraList) {

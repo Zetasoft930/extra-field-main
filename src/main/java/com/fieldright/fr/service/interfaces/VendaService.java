@@ -31,4 +31,5 @@ public interface VendaService {
 
     //NOVO CODIGO
     Response<BigDecimal> countVendaByVendedorAndStatus(long usuarioLojaId, StatusVenda status);
+
 }

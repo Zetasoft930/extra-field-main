@@ -3,13 +3,14 @@ package com.fieldright.fr.controller.implementation;
 import com.fieldright.fr.controller.interfaces.CompraController;
 import com.fieldright.fr.entity.Avaliacao;
 import com.fieldright.fr.entity.dto.CarrinhoDTO;
-import com.fieldright.fr.entity.dto.CompraDTO;
 import com.fieldright.fr.entity.dto.PrecoDTO;
 import com.fieldright.fr.entity.dto.ProductPriceDTO;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.security.util.JwtUserUtil;
 import com.fieldright.fr.service.interfaces.CompraService;
+import com.fieldright.fr.util.enums.StatusVenda;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -77,5 +78,12 @@ public class CompraControllerImpl implements CompraController {
     public Response<PrecoDTO> newPrice(@RequestBody @Valid ProductPriceDTO dto) {
 
         return compraService.newprice(dto);
+    }
+    @GetMapping("/pedido")
+    @Override
+    public Response getPedidoByUserAndStatus(@RequestParam(required = true, name = "userId") Long userIdLoja,
+                                             @RequestParam(required = true, name = "status", defaultValue = "NOVA") String status,
+                                             Pageable pageable) {
+        return compraService.getPedidoByUserAndStatus(userIdLoja, StatusVenda.valueOf(status),pageable);
     }
 }

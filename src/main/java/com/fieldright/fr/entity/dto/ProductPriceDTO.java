@@ -14,4 +14,6 @@ public class ProductPriceDTO {
     @NotNull(message = "unidadeMedida e obrigatorio")
     @NotBlank(message = "unidadeMedida e obrigatorio")
     private String unidadeMedida;
+    @NotNull(message = "qtd e obrigatorio")
+    private BigDecimal qtd;
 }

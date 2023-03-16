@@ -6,6 +6,8 @@ import com.fieldright.fr.entity.dto.*;
 import com.fieldright.fr.entity.emis.TransactionGPO;
 import com.fieldright.fr.entity.security.UserAuthenticated;
 import com.fieldright.fr.response.Response;
+import com.fieldright.fr.util.enums.StatusVenda;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 import javax.xml.bind.JAXBException;
@@ -47,4 +49,6 @@ public interface CompraService {
 
     Response<PrecoDTO> newprice(ProductPriceDTO productPriceDTO);
     public BigDecimal getQtCompraCalc(String unidadeProduto,String unidadeCompra,int qtdComprada);
+
+    public Response getPedidoByUserAndStatus(Long userIdLoja, StatusVenda status, Pageable pageable);
 }

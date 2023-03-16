@@ -70,4 +70,6 @@ public interface VendaController {
             notes = "Esse endpoint serve para mostrar o total de vendas de um usuario unico/loja. deve ser informado o id do usuario e status da venda."
     )
     Response countVendaByVendedorAndStatus(Long userIdLoja,String status);
+
+
 }

@@ -2,6 +2,8 @@ package com.fieldright.fr.repository;
 
 import com.fieldright.fr.entity.Venda;
 import com.fieldright.fr.util.enums.StatusVenda;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -26,6 +28,8 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
             "AND\tv.vendedor_id  = ?1\n" +
             "group by u.id", nativeQuery = true)
     Optional<BigDecimal> countVendaByVendedorAndStatus(long usuarioId, String status);
+
+
 
     @Query(value = "select" +
             "       SUM(v.vl_total) from  venda v \n" +

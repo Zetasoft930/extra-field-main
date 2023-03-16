@@ -8,7 +8,9 @@ import com.fieldright.fr.entity.dto.ProductPriceDTO;
 import com.fieldright.fr.response.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -58,4 +60,13 @@ public interface CompraController {
             notes = "Este endpoint retorna novo preco do produto com base na unidade de medida selecionada."
     )
     Response<PrecoDTO> newPrice(ProductPriceDTO dto);
+    @ApiOperation(
+            value = "pedidos por usuario e estado",
+            notes = "Esse endpoint serve para mostrar os pedidos de um usuario unico/loja. deve ser informado o id do usuario e status da venda."
+    )
+
+
+    Response getPedidoByUserAndStatus(Long userIdLoja,
+                                      String status,
+                                      Pageable pageable);
 }

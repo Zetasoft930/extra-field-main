@@ -126,6 +126,7 @@ public class VendaControllerImpl implements VendaController {
         return vendaService.countVendaByVendedorAndStatus(userIdLoja, StatusVenda.valueOf(status));
     }
 
+
     private Response getResponse(HttpStatus status, List<String> errors) {
         return new Response.Builder()
                 .withStatus(status)
