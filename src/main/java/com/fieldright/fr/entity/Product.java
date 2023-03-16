@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -65,6 +66,8 @@ public class Product {
     private Integer min_stock = 0;
     @Enumerated(EnumType.STRING)
     private StatusProduct status;
+
+
 
     public BigDecimal qtdDisponivelParaCompra() {
 

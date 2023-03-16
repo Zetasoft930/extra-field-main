@@ -64,4 +64,5 @@ public interface ProductService {
 
     void internalSave(List<Product> products);
 
+    List<Product> findStockEmBaixoByUserLoja();
 }

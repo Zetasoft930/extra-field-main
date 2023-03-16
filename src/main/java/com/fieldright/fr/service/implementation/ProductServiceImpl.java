@@ -649,4 +649,9 @@ public class ProductServiceImpl implements ProductService {
            }
     }
 
+    @Override
+    public List<Product> findStockEmBaixoByUserLoja() {
+        return productRepository.findStockEmBaixoByUserLoja();
+    }
+
 }

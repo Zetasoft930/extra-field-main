@@ -60,6 +60,7 @@ public class CompraServiceImpl implements CompraService {
 	private final static String key = "fieldright/frete/gratis";
 
 
+
 	@Autowired
 	private PushSender pushSender;
 	@Autowired
@@ -162,6 +163,8 @@ public class CompraServiceImpl implements CompraService {
 				carrinhoService.internalAddCodigoPagamento(carrinhoId, codigoPagamento);
 
 				sendNotification(comprasSalvas);
+				sendEmail(comprasSalvas);
+
 				return returnStringInResponse(HttpStatus.OK, codigoPagamento, null);
 			}
 			return returnStringInResponse(HttpStatus.UNAUTHORIZED, null,
@@ -775,6 +778,16 @@ public class CompraServiceImpl implements CompraService {
 			} else {
 			pushSender.avisaEstoque(compra.getVendedorId(), "Notificacao de teste para o produto: "+name);
 			}
+		}
+	}
+
+	public void sendEmail(List<Compra> compras) {
+
+		for (Compra compra : compras) {
+			Product product = productService.internalFindById(compra.getProductId());
+
+			eMailSender.send(product);
+
 		}
 	}
 
