@@ -27,6 +27,8 @@ public class Category {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> pictures;
 
+
+
     public Category(String name) {
         this.name = name;
     }

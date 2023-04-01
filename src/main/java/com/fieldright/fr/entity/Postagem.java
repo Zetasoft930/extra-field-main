@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
+@Builder
 @Data
 @Entity
 public class Postagem {
@@ -23,6 +23,10 @@ public class Postagem {
 
     private String imagem;
     private LocalDateTime data = LocalDateTime.now();
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey)
+    private CategoriaPostagem categoria;
 
     @Enumerated(value = EnumType.STRING)
     private StatusPostagem status = StatusPostagem.ACTIVADO;
