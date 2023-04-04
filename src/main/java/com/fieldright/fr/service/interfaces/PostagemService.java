@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 
 public interface PostagemService {
 
-    Response save(PostagemDTO dto);
-    Response<Page<PostagemDTO>> findByStatus(Integer status, Pageable pageable);
+    public Response save(PostagemDTO dto);
+    public Response<Page<PostagemDTO>> findByStatus(Integer status, Pageable pageable);
 
-    Response update(Long id,PostagemDTO dto);
-    Response delete(Long id);
-    Response updateStatus(Long id,Integer status);
+    public Response update(Long id,PostagemDTO dto);
+    public Response delete(Long id);
+    public Response updateStatus(Long id,Integer status);
 
-    Response findAll(Pageable pageable);
+    public  Response findAll(Pageable pageable);
 
 }

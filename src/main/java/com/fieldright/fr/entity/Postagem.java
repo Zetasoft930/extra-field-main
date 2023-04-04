@@ -7,7 +7,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Builder
 @Data
@@ -30,5 +32,9 @@ public class Postagem {
 
     @Enumerated(value = EnumType.STRING)
     private StatusPostagem status = StatusPostagem.ACTIVADO;
+
+
+    @OneToMany(mappedBy = "postagem",fetch = FetchType.LAZY)
+    private Set<Comentario> comentarios = new HashSet<>();
 
 }
