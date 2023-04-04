@@ -1,5 +1,8 @@
 package com.fieldright.fr.controller.implementation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fieldright.fr.controller.interfaces.PostagemController;
 import com.fieldright.fr.entity.dto.PostagemDTO;
 import com.fieldright.fr.entity.dto.PostagemFilterDTO;
@@ -9,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.Get;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.annotation.MultipartConfig;
 import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -32,10 +38,24 @@ class PostagemControllerImpl implements PostagemController{
     @Autowired
     private PostagemService postagemService;
 
-    @PostMapping(value = "/save")
+    @PostMapping(value = "/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
     @Override
-    public  Response save(@RequestBody @Valid PostagemDTO postagemDTO) {
-        return postagemService.save(postagemDTO);
+    public  Response save(@RequestParam(name = "data") String data, @RequestParam(name = "file",required = true) MultipartFile file) throws JsonProcessingException {
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> map = objectMapper.readValue(data, new TypeReference<Map<String, Object>>(){});
+
+        PostagemDTO postagemDTO = PostagemDTO
+                .builder()
+                .titulo((String) map.get("titulo"))
+                .descricao((String) map.get("descricao"))
+                .categoria(Long.parseLong(String.valueOf(map.get("categoria"))))
+                .build();
+
+        System.out.printf("data >> "+data);
+
+        return postagemService.save(postagemDTO,file);
     }
 @GetMapping(value = "/findBystatus")
     @Override

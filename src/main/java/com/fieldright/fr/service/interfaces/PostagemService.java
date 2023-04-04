@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 public interface PostagemService {
 
-    public Response save(PostagemDTO dto);
+    public Response save(PostagemDTO dto,MultipartFile file);
     public Response<Page<PostagemDTO>> findByStatus(Integer status, Pageable pageable);
 
     public Response update(Long id,PostagemDTO dto);

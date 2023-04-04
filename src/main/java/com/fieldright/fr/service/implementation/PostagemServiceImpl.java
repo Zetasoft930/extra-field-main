@@ -6,6 +6,7 @@ import com.fieldright.fr.entity.dto.ProductDTO;
 import com.fieldright.fr.repository.PostagemRepository;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.service.interfaces.PostagemService;
+import com.fieldright.fr.util.FileUtil;
 import com.fieldright.fr.util.enums.StatusPostagem;
 import com.fieldright.fr.util.mapper.PostagemMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,28 +35,34 @@ public class PostagemServiceImpl implements PostagemService {
     @Value("${src.images.past}")
     private String past;
 
+    @Autowired
+    private FileUtil fileUtil;
+
     @Override
-    public Response save(PostagemDTO dto) {
+    public Response save(PostagemDTO dto,MultipartFile file) {
 
         String message = "Operacao realizada com sucesso";
         HttpStatus httpStatus = HttpStatus.CREATED;
-      /*  Postagem postagem = Postagem.builder()
-                                    .descricao(dto.getDescricao())
-                                    .titulo(dto.getTitulo())
-                                    .status(StatusPostagem.ACTIVADO)
-                                    .data(LocalDateTime.now()).build();*/
 
-        Postagem postagem = postagemMapper.toPostagem(dto);
-        postagem.setData(LocalDateTime.now());
-        postagem.setStatus(StatusPostagem.ACTIVADO);
+        String nameFile =   fileUtil.transfere(file);
 
-        if(postagem != null)
-        {
-            postagemRepository.save(postagem);
-        }
-        else {
+        if(nameFile != null) {
 
-            message = "Nao foi possivel registar a postagem.operacao cancelada";
+            Postagem postagem = postagemMapper.toPostagem(dto);
+            postagem.setImagem(nameFile);
+            postagem.setData(LocalDateTime.now());
+            postagem.setStatus(StatusPostagem.ACTIVADO);
+
+            if (postagem != null) {
+                postagemRepository.save(postagem);
+            } else {
+
+                message = "Nao foi possivel registar a postagem.operacao cancelada";
+                httpStatus = HttpStatus.NOT_IMPLEMENTED;
+            }
+        }else {
+
+            message = "Nao foi possivel Salvar a imagem da postagem";
             httpStatus = HttpStatus.NOT_IMPLEMENTED;
         }
 

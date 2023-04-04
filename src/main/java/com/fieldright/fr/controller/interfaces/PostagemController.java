@@ -1,5 +1,6 @@
 package com.fieldright.fr.controller.interfaces;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fieldright.fr.entity.dto.PostagemDTO;
 import com.fieldright.fr.entity.dto.PostagemFilterDTO;
 import com.fieldright.fr.response.Response;
@@ -19,7 +20,7 @@ public interface PostagemController {
 
     @ApiOperation(value = "save", notes = "Registar nova postagem")
     @ResponseStatus(HttpStatus.CREATED)
-    Response save(PostagemDTO postagemDTO);
+    Response save(String data,MultipartFile file) throws JsonProcessingException;
 
     @ApiOperation(value = "findBystatus", notes = "Lista de Postagem por status")
     @ResponseStatus(HttpStatus.OK)

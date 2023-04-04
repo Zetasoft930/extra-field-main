@@ -30,6 +30,7 @@ public class CategoriaPostagemMapper extends GenericMapper<Category, CategoriaDT
                 .builder()
                 .id(dto.getId())
                 .status(StatusCategoriPostagem.ACTIVADO)
+                .name(dto.getName())
                 .data(LocalDateTime.now())
                 .build();
 

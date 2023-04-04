@@ -38,9 +38,9 @@ public  Response findBystatus(@RequestParam(required = true) Integer status, Pag
     public  Response delete(@PathVariable(required = true) Long id) {
         return postagemService.delete(id);
     }
-@PutMapping(value = "/updateStatus/{id}")
+    @PutMapping(value = "/updateStatus/{id}")
     @Override
-public  Response updateStatus(@PathVariable(required = true)Long id,@RequestParam(required = true) Integer status) {
+    public  Response updateStatus(@PathVariable(required = true)Long id,@RequestParam(required = true) Integer status) {
         return postagemService.updateStatus(id,status);
     }
 
