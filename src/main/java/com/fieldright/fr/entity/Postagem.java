@@ -14,6 +14,8 @@ import java.util.Set;
 @Builder
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class Postagem {
 
     @Id

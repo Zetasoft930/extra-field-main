@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +22,14 @@ public interface PostagemController {
     @ApiOperation(value = "save", notes = "Registar nova postagem")
     @ResponseStatus(HttpStatus.CREATED)
     Response save(String data,MultipartFile file) throws JsonProcessingException;
+
+    @ApiOperation(value = "addComentario", notes = "Adicionari comentario na postagem")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Response addComentario(Long id, String comentario, Authentication authentication);
+
+    @ApiOperation(value = "editStausComentario", notes = "Alterar o status do comentario na postagem")
+    @ResponseStatus(HttpStatus.OK)
+    public Response editStatusComentario(Long idComentario, Long status);
 
     @ApiOperation(value = "findBystatus", notes = "Lista de Postagem por status")
     @ResponseStatus(HttpStatus.OK)

@@ -23,7 +23,7 @@ public class FileUtil {
 
         try {
             file.transferTo(convertedFile);
-            return newFileName;
+            return "https://fieldrightapi.herokuapp.com/imagens/"+newFileName;
         } catch (IOException e) {
             e.printStackTrace();
         }

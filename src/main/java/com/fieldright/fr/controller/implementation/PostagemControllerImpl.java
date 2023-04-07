@@ -4,15 +4,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fieldright.fr.controller.interfaces.PostagemController;
+import com.fieldright.fr.entity.Comentario;
+import com.fieldright.fr.entity.Postagem;
 import com.fieldright.fr.entity.dto.PostagemDTO;
 import com.fieldright.fr.entity.dto.PostagemFilterDTO;
+import com.fieldright.fr.entity.security.JwtUser;
 import com.fieldright.fr.response.Response;
+import com.fieldright.fr.service.interfaces.ComentarioService;
 import com.fieldright.fr.service.interfaces.PostagemService;
+import com.fieldright.fr.util.enums.StatusComentario;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.Get;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +43,8 @@ class PostagemControllerImpl implements PostagemController{
 
     @Autowired
     private PostagemService postagemService;
+    @Autowired
+    private ComentarioService comentarioService;
 
     @PostMapping(value = "/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
     @Override
@@ -53,13 +61,48 @@ class PostagemControllerImpl implements PostagemController{
                 .categoria(Long.parseLong(String.valueOf(map.get("categoria"))))
                 .build();
 
-        System.out.printf("data >> "+data);
+
 
         return postagemService.save(postagemDTO,file);
     }
-@GetMapping(value = "/findBystatus")
+
+    @PostMapping(value = "/addComentario/{id}")
     @Override
-public Response findBystatus(@RequestParam(required = true) Integer status, Pageable pageable) {
+    public Response addComentario(@PathVariable(required = true) Long id,
+                                  @RequestParam(required = true) String comentario,
+                                  Authentication authentication) {
+
+        JwtUser jwtUser = (JwtUser) authentication.getPrincipal();
+        Comentario modelo = Comentario
+                .builder()
+                .comentario(comentario)
+                .usuarioId(jwtUser.getId())
+                .status(StatusComentario.PENDING)
+                .postagem(Postagem
+                        .builder()
+                        .id(id)
+                        .build())
+                .build();
+
+
+
+        return comentarioService.create(modelo);
+
+    }
+
+    @PostMapping(value = "/editStatusComentario")
+    @Override
+    public Response editStatusComentario(@RequestParam(name = "comentario-id",required = true) Long idComentario,
+                                        @RequestParam(name = "status", defaultValue = "2") Long status) {
+
+        return comentarioService.updateStatus(idComentario,
+                StatusComentario.toEnum(status));
+
+    }
+
+    @GetMapping(value = "/findBystatus")
+    @Override
+    public Response findBystatus(@RequestParam(required = true) Integer status, Pageable pageable) {
         return postagemService.findByStatus(status,pageable);
     }
 
@@ -68,9 +111,9 @@ public Response findBystatus(@RequestParam(required = true) Integer status, Page
     public  Response delete(@PathVariable(required = true) Long id) {
         return postagemService.delete(id);
     }
-@PutMapping(value = "/updateStatus/{id}")
+    @PutMapping(value = "/updateStatus/{id}")
     @Override
-public  Response updateStatus(@PathVariable(required = true)Long id,@RequestParam(required = true) Integer status) {
+    public  Response updateStatus(@PathVariable(required = true)Long id,@RequestParam(required = true) Integer status) {
         return postagemService.updateStatus(id,status);
     }
 

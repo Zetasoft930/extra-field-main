@@ -1,13 +1,19 @@
 package com.fieldright.fr.service.implementation;
 
+import com.fieldright.fr.entity.Comentario;
 import com.fieldright.fr.entity.Postagem;
+import com.fieldright.fr.entity.Usuario;
+import com.fieldright.fr.entity.dto.ComentarioDTO;
 import com.fieldright.fr.entity.dto.PostagemDTO;
 import com.fieldright.fr.entity.dto.ProductDTO;
 import com.fieldright.fr.repository.PostagemRepository;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.service.interfaces.PostagemService;
+import com.fieldright.fr.service.interfaces.UserService;
 import com.fieldright.fr.util.FileUtil;
+import com.fieldright.fr.util.enums.StatusComentario;
 import com.fieldright.fr.util.enums.StatusPostagem;
+import com.fieldright.fr.util.mapper.ComentarioMapper;
 import com.fieldright.fr.util.mapper.PostagemMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
@@ -37,6 +44,12 @@ public class PostagemServiceImpl implements PostagemService {
 
     @Autowired
     private FileUtil fileUtil;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ComentarioMapper comentarioMapper;
 
     @Override
     public Response save(PostagemDTO dto,MultipartFile file) {
@@ -89,10 +102,29 @@ public class PostagemServiceImpl implements PostagemService {
 
             if(statusPostagem != null)
             {
-                postagemPage = postagemRepository.findByStatus(statusPostagem.getText(),pageable);
+                postagemPage = postagemRepository.findByStatus(statusPostagem,pageable);
 
                 Page<PostagemDTO> dtos = postagemPage.map(p -> {
-                    return postagemMapper.toPostagemDTO(p);
+                    PostagemDTO postagemDTO =  postagemMapper.toPostagemDTO(p);
+                    postagemDTO.setComentarios(new HashSet<>());
+
+                    for(Comentario comentario : p.getComentarios())
+                    {
+
+                        if(comentario.getStatus() == StatusComentario.ACCEPTED) {
+
+                            Usuario usuario = userService.internalFindUserById(comentario.getUsuarioId());
+
+                            ComentarioDTO comentarioDTO = comentarioMapper.toComentarioDTO(comentario);
+                            comentarioDTO.setAvatar(usuario.getAvatar());
+                            comentarioDTO.setLastName(usuario.getLastName());
+                            comentarioDTO.setFirstName(usuario.getFirstName());
+                            comentarioDTO.setTipoUsuario(usuario.getPerfil());
+                            postagemDTO.getComentarios().add(comentarioDTO);
+                        }
+                    }
+
+                    return  postagemDTO;
 
                 });
 

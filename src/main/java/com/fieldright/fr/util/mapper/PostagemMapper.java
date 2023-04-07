@@ -43,10 +43,12 @@ public class PostagemMapper  {
         return PostagemDTO
                 .builder()
                 .data(Postagem.getData())
+                .id(Postagem.getId())
                 .titulo(Postagem.getTitulo())
                 .descricao(Postagem.getDescricao())
                 .imagem(Postagem.getImagem())
                 .categoria(Postagem.getCategoria().getId())
+
                 .build();
     }
 

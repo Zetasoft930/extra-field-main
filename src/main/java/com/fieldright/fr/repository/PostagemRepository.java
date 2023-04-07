@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 @Repository
 public interface PostagemRepository extends JpaRepository<Postagem,Long> {
 
-    @Query(value = "   SELECT * FROM Postagem p  WHERE p.status = ?1 ORDER BY p.data DESC",nativeQuery = true)
-    public Page<Postagem> findByStatus(String status, Pageable pageable);
+    @Query(value = "SELECT p FROM Postagem p  WHERE p.status = ?1 ORDER BY p.data DESC")
+    public Page<Postagem> findByStatus(StatusPostagem status, Pageable pageable);
 
 
     @Query(value = "select * from Postagem p\n" +
