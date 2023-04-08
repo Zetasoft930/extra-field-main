@@ -1,6 +1,7 @@
 package com.fieldright.fr.controller.implementation;
 
 import com.fieldright.fr.controller.interfaces.VendaController;
+import com.fieldright.fr.entity.dto.ProdutoVendidoDTO;
 import com.fieldright.fr.entity.dto.VendaDTO;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.security.util.JwtUserUtil;
@@ -10,6 +11,8 @@ import com.fieldright.fr.util.exception.PermissionDeniedException;
 import org.hibernate.engine.spi.Status;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -124,6 +127,12 @@ public class VendaControllerImpl implements VendaController {
     public Response countVendaByVendedorAndStatus(@RequestParam(required = true,name = "userId") Long userIdLoja,
                                                   @RequestParam(required = true,name = "status",defaultValue = "NOVA") String status) {
         return vendaService.countVendaByVendedorAndStatus(userIdLoja, StatusVenda.valueOf(status));
+    }
+
+    @GetMapping(path = "/findTopSellingProducts")
+    @Override
+    public Response<Page<ProdutoVendidoDTO>> findProdutomasvendidoByUsuario(@RequestParam(required = true,name = "userId") Long userIdLoja, Pageable pageable) {
+        return vendaService.findByProductMasVendido(userIdLoja,pageable);
     }
 
 

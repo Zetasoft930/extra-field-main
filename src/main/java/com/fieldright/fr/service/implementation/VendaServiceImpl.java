@@ -2,6 +2,8 @@ package com.fieldright.fr.service.implementation;
 
 import com.fieldright.fr.entity.Venda;
 import com.fieldright.fr.entity.Vendedor;
+import com.fieldright.fr.entity.dto.ProdutoVendidoDTO;
+import com.fieldright.fr.entity.dto.UserCompraDTO;
 import com.fieldright.fr.entity.dto.VendaDTO;
 import com.fieldright.fr.entity.security.UserAuthenticated;
 import com.fieldright.fr.mail.EMailSender;
@@ -13,6 +15,8 @@ import com.fieldright.fr.util.enums.StatusVenda;
 import com.fieldright.fr.util.exception.PermissionDeniedException;
 import com.fieldright.fr.util.mapper.VendaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -218,6 +222,28 @@ public class VendaServiceImpl implements VendaService {
                 .withData(totalVenda)
                 .withErrors(null)
                 .build();
+    }
+
+    @Override
+    public Response<Page<ProdutoVendidoDTO>> findByProductMasVendido(Long usuarioLojaId, Pageable pageable) {
+
+
+        Page<Object[]> objs = vendaRepository.findProdutoMasVendido(usuarioLojaId,pageable);
+        Page<ProdutoVendidoDTO> dtos = null;
+        dtos = objs.map(Object -> {
+            return ProdutoVendidoDTO
+                    .builder().id(Long.parseLong(Object[0].toString()))
+                    .name(Object[1].toString())
+                    .qtd(BigDecimal.valueOf(Double.parseDouble(Object[2].toString())))
+                    .build();
+        });
+        return new Response.Builder()
+                .withStatus(HttpStatus.OK)
+                .withData(dtos)
+                .withErrors(null)
+                .build();
+
+
     }
 
     private void validaLojaComEntregadoresProprio(UserAuthenticated authenticated) {

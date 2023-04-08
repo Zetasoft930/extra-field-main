@@ -41,4 +41,19 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
     Optional<BigDecimal> totalValorByVendedorAndStatus(long usuarioId, String status);
 
 
+    @Query(value = "select c.product_id as id,\n" +
+            "c.product_name as name,\n" +
+            "sum(c.qtd_comprada) as totalQtd\n" +
+            "from venda v \n" +
+            "\tinner join usuario_vendas uv on uv.vendas_id  = v.id \n" +
+            "\tinner join venda_compras vc on vc.venda_id  = v.id \n" +
+            "\tinner join compra c on  c.id = vc.compras_id \n" +
+            "where v.status  = 'FINALIZADA'\n" +
+            "and uv.vendedor_id  = ?1\n" +
+            "group by c.product_id,c.product_name\n" +
+            "order by totalQtd desc",nativeQuery = true)
+
+    public Page<Object[]> findProdutoMasVendido(Long usuarioId,Pageable pageable);
+
+
 }

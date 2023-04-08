@@ -1,10 +1,13 @@
 package com.fieldright.fr.service.interfaces;
 
+import com.fieldright.fr.entity.dto.ProdutoVendidoDTO;
 import com.fieldright.fr.entity.dto.VendaDTO;
 import com.fieldright.fr.entity.security.UserAuthenticated;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.util.enums.StatusVenda;
 import com.fieldright.fr.util.exception.PermissionDeniedException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
@@ -32,4 +35,5 @@ public interface VendaService {
     //NOVO CODIGO
     Response<BigDecimal> countVendaByVendedorAndStatus(long usuarioLojaId, StatusVenda status);
 
+    Response<Page<ProdutoVendidoDTO>> findByProductMasVendido(Long usuarioId, Pageable pageable);
 }

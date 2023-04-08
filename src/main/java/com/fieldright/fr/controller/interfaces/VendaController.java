@@ -1,9 +1,12 @@
 package com.fieldright.fr.controller.interfaces;
 
+import com.fieldright.fr.entity.dto.ProdutoVendidoDTO;
 import com.fieldright.fr.entity.dto.VendaDTO;
 import com.fieldright.fr.response.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -71,5 +74,11 @@ public interface VendaController {
     )
     Response countVendaByVendedorAndStatus(Long userIdLoja,String status);
 
+
+    @ApiOperation(
+            value = "Produtos mas vendido",
+            notes = "Esse endepoint mostra os produtos mas vendido por um usuario."
+    )
+    Response<Page<ProdutoVendidoDTO>> findProdutomasvendidoByUsuario(Long userIdLoja, Pageable pageable);
 
 }
