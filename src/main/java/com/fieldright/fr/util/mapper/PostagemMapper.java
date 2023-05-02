@@ -11,6 +11,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 
 @Component
@@ -40,6 +41,7 @@ public class PostagemMapper  {
 
     public PostagemDTO toPostagemDTO(Postagem Postagem){
 
+
         return PostagemDTO
                 .builder()
                 .data(Postagem.getData())
@@ -48,7 +50,7 @@ public class PostagemMapper  {
                 .descricao(Postagem.getDescricao())
                 .imagem(Postagem.getImagem())
                 .categoria(Postagem.getCategoria().getId())
-
+                .comentarios(new HashSet<>())
                 .build();
     }
 

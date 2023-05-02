@@ -102,7 +102,7 @@ class PostagemControllerImpl implements PostagemController{
 
     @GetMapping(value = "/findBystatus")
     @Override
-    public Response findBystatus(@RequestParam(required = true) Integer status, Pageable pageable) {
+    public Response findBystatus(@RequestParam(required = true,defaultValue = "1") Integer status, Pageable pageable) {
         return postagemService.findByStatus(status,pageable);
     }
 

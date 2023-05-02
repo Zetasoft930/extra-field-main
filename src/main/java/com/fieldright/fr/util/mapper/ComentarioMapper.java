@@ -8,11 +8,14 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Component
 public class ComentarioMapper extends GenericMapper<Comentario, ComentarioDTO> {
-	
+
 	 private MapperFacade facade;
 
 	    public ComentarioMapper() {
@@ -20,8 +23,22 @@ public class ComentarioMapper extends GenericMapper<Comentario, ComentarioDTO> {
 	    }
 
 	    public ComentarioDTO toComentarioDTO(Comentario Comentario){
+
 	        return facade.map(Comentario,ComentarioDTO.class);
 	    }
+	public Set<ComentarioDTO> toComentarioDTO(Set<Comentario> comentarios){
+
+		Set<ComentarioDTO> result = new HashSet<>();
+
+		for(Comentario comentario : comentarios){
+
+
+
+			result.add(toComentarioDTO(comentario));
+		}
+
+		return result;
+	}
 	    
 	    public Comentario fromComentarioDTO(ComentarioDTO ComentarioDTO){
 	        return facade.map(ComentarioDTO,Comentario.class);

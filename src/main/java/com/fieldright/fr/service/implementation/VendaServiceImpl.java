@@ -1,5 +1,6 @@
 package com.fieldright.fr.service.implementation;
 
+import com.fieldright.fr.entity.Product;
 import com.fieldright.fr.entity.Venda;
 import com.fieldright.fr.entity.Vendedor;
 import com.fieldright.fr.entity.dto.ProdutoVendidoDTO;
@@ -49,6 +50,9 @@ public class VendaServiceImpl implements VendaService {
     private CarrinhoService carrinhoService;
     @Autowired
     private VendaRepository vendaRepository;
+
+    @Autowired
+    private ProductService productService;
 
     public VendaServiceImpl(UserService userService, CompraService compraService, VendaRepository vendaRepository, VendaMapper vendaMapper) {
         this.userService = userService;
@@ -228,13 +232,19 @@ public class VendaServiceImpl implements VendaService {
     public Response<Page<ProdutoVendidoDTO>> findByProductMasVendido(Long usuarioLojaId, Pageable pageable) {
 
 
+
         Page<Object[]> objs = vendaRepository.findProdutoMasVendido(usuarioLojaId,pageable);
         Page<ProdutoVendidoDTO> dtos = null;
         dtos = objs.map(Object -> {
+
+
+         Product product = productService.findById(Long.parseLong(Object[0].toString()));
+
             return ProdutoVendidoDTO
-                    .builder().id(Long.parseLong(Object[0].toString()))
-                    .name(Object[1].toString())
+                    .builder().id(product.getId())
+                    .name(product.getName())
                     .qtd(BigDecimal.valueOf(Double.parseDouble(Object[2].toString())))
+                    .image(product.getPictures())
                     .build();
         });
         return new Response.Builder()

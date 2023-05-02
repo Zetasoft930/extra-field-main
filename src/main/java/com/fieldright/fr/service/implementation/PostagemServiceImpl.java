@@ -247,7 +247,27 @@ public class PostagemServiceImpl implements PostagemService {
                 postagemPage = postagemRepository.findAll(pageable);
 
                 Page<PostagemDTO> dtos = postagemPage.map(p -> {
-                    return postagemMapper.toPostagemDTO(p);
+                    PostagemDTO postagemDTO = postagemMapper.toPostagemDTO(p);
+
+
+                    for(Comentario comentario : p.getComentarios())
+                    {
+
+                        if(comentario.getStatus() == StatusComentario.ACCEPTED) {
+
+                            Usuario usuario = userService.internalFindUserById(comentario.getUsuarioId());
+
+                            ComentarioDTO comentarioDTO = comentarioMapper.toComentarioDTO(comentario);
+                            comentarioDTO.setAvatar(usuario.getAvatar());
+                            comentarioDTO.setLastName(usuario.getLastName());
+                            comentarioDTO.setFirstName(usuario.getFirstName());
+                            comentarioDTO.setTipoUsuario(usuario.getPerfil());
+                            postagemDTO.getComentarios().add(comentarioDTO);
+                        }
+                    }
+
+
+                    return postagemDTO;
 
                 });
 
