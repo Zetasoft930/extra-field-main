@@ -20,4 +20,5 @@ public interface PostagemService {
 
     public  Response findAll(Pageable pageable);
 
+    Response findById(Long id);
 }

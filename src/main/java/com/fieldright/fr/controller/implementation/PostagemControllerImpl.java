@@ -122,4 +122,11 @@ class PostagemControllerImpl implements PostagemController{
     public Response findAll(Pageable pageable) {
         return postagemService.findAll(pageable);
     }
+
+
+    @GetMapping(value = "/{id}")
+    @Override
+    public Response findById(@PathVariable(required = true,name = "id") Long id) {
+        return postagemService.findById(id);
+    }
 }

@@ -48,4 +48,9 @@ public interface PostagemController {
     Response findAll(Pageable pageable);
 
 
+    @ApiOperation(value = "findById", notes = "Lista de Postagem por id")
+    @ResponseStatus(HttpStatus.OK)
+    Response findById(Long id);
+
+
 }

@@ -292,4 +292,64 @@ public class PostagemServiceImpl implements PostagemService {
                 .withErrors(null)
                 .build();
     }
+
+    @Override
+    public Response findById(Long id) {
+
+
+        Optional<Postagem> postagemPage = null;
+        String mensagem = "Status invalido";
+        PostagemDTO postagemDTO = null;
+
+        try {
+
+            postagemPage = postagemRepository.findById(id);
+
+
+            if(postagemPage.isPresent()) {
+
+                 postagemDTO = postagemMapper.toPostagemDTO(postagemPage.get());
+
+
+                for (Comentario comentario : postagemPage.get().getComentarios()) {
+
+                    if (comentario.getStatus() == StatusComentario.ACCEPTED) {
+
+                        Usuario usuario = userService.internalFindUserById(comentario.getUsuarioId());
+
+                        ComentarioDTO comentarioDTO = comentarioMapper.toComentarioDTO(comentario);
+                        comentarioDTO.setAvatar(usuario.getAvatar());
+                        comentarioDTO.setLastName(usuario.getLastName());
+                        comentarioDTO.setFirstName(usuario.getFirstName());
+                        comentarioDTO.setTipoUsuario(usuario.getPerfil());
+                        postagemDTO.getComentarios().add(comentarioDTO);
+                    }
+                }
+
+
+                return new Response.Builder()
+                        .withStatus(HttpStatus.OK)
+                        .withData(postagemDTO)
+                        .withErrors(null)
+                        .build();
+
+            }
+
+            throw new RuntimeException("ID invalido");
+
+        }catch (Exception ex)
+        {
+            ex.printStackTrace();
+            mensagem = ex.getMessage();
+        }
+
+
+        return new Response.Builder()
+                .withStatus(HttpStatus.NOT_FOUND)
+                .withData(mensagem)
+                .withErrors(null)
+                .build();
+
+
+    }
 }
