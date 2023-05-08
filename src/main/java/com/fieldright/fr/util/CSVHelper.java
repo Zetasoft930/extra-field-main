@@ -59,11 +59,14 @@ public class CSVHelper {
 
             return products;
         } catch (IOException e) {
-            throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        catch (Exception ex){
+            throw new RuntimeException(ex);
         }
     }
 
-    private Product getProduct(CSVRecord csvRecord){
+    private Product getProduct(CSVRecord csvRecord)throws  Exception{
 
 
         Product product = new Product();

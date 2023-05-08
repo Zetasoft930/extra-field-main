@@ -90,4 +90,9 @@ Page<Product> findPromotionProducts(long productId, Pageable pageable);
 		"where p.min_stock >= (p.quantity_available - p.qtd_reservada)\n" +
 		"and p.status ='CONFIRMED'\n",nativeQuery = true)
     List<Product> findStockEmBaixoByUserLoja();
+
+
+	@Query(value = "select p.* from promocao_product pp join product p on pp.product_id = p.id  \r\n"
+			+ "where current_date between pp.start_date and pp.end_date and (p.vendedor_id = ?1 or ?1 = 0)", nativeQuery = true)
+    Page<Product> findPromotionVendedor(long vendedor, Pageable pageable);
 }

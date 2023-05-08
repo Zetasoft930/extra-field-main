@@ -8,6 +8,7 @@ import com.fieldright.fr.response.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -85,8 +86,15 @@ public interface ProductController {
 
     @ApiOperation(value = "evaluate", notes = "avaliacao de produto")
     ResponseEntity<Response<HttpStatus>> evaluate(AvaliacaoProductnNewDTO avaliacao);
-	
-	AvaliacaoProductDTO getProductAvaliation(long productId, long avaliadorId);
+
+    @ApiOperation(value = "evaluate-productAndUser", notes = "mostra avaliacao do produto por avaliador/user")
+    Response getProductAvaliation(long productId, long avaliadorId);
+
+    @ApiOperation(value = "evaluate", notes = "mostra avaliacao dos produtos")
+    Response getEvaluate(Pageable pageable);
+
+    @ApiOperation(value = "evaluate-product", notes = "mostra avaliacao por  produto")
+    Response getEvaluate(Long productId,Pageable pageable);
 	
 	@ApiOperation(value = "Criar fração do produto", notes = "")
 	@ResponseStatus(HttpStatus.CREATED)

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,29 +25,32 @@ public class CSVServiceImpl implements CSVService {
     @Override
     public Response<String> saveProduct(MultipartFile file) {
 
-        String message = "Ficheiro importado com sucesso";
+        String message = "";
         HttpStatus status = HttpStatus.OK;
+        List<String> messageError = new ArrayList<>();
         try {
             List<Product> products = csvHelper.csvToTutorials(file.getInputStream());
             if(!products.isEmpty())
             {
                 productService.internalSave(products);
+                message = "Ficheiro importado com sucesso";
             }
 
         } catch (IOException e) {
-            message = "fail to store csv data: " + e.getMessage();
+            messageError.add("fail to store csv data: " + e.getMessage());
+
         }
         catch (Exception e){
             e.printStackTrace();
-            message = e.getMessage();
+            messageError.add( e.getMessage());
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         }
 
-
         return new Response.Builder()
-                .withStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .withStatus(status)
                 .withData(message)
-                .withErrors(null)
+                .withErrors(messageError)
                 .build();
     }
 }

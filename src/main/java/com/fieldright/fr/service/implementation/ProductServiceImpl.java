@@ -4,6 +4,8 @@ import com.fieldright.fr.entity.*;
 import com.fieldright.fr.entity.dto.AvaliacaoProductDTO;
 import com.fieldright.fr.entity.dto.ProductDTO;
 import com.fieldright.fr.entity.dto.ProductFracaoDTO;
+import com.fieldright.fr.entity.dto.ProdutoVendidoDTO;
+import com.fieldright.fr.entity.dto.avaliacao.AvaliadorDTO;
 import com.fieldright.fr.entity.security.UserAuthenticated;
 import com.fieldright.fr.repository.AvaliacaoProductRepository;
 import com.fieldright.fr.repository.ProductFracaoRepository;
@@ -41,14 +43,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -645,13 +640,105 @@ public class ProductServiceImpl implements ProductService {
 
        for(Product p : products)
            {
-               productRepository.save(p);
+              p = productRepository.save(p);
            }
     }
 
     @Override
     public List<Product> findStockEmBaixoByUserLoja() {
         return productRepository.findStockEmBaixoByUserLoja();
+    }
+
+    @Override
+    public Response findAvaliacaoProduct(Pageable pageable) {
+
+
+
+        Page<Object[]> objs = avaliacaoProductRepository.findAvaliacaoAll(pageable);
+        Page<com.fieldright.fr.entity.dto.avaliacao.AvaliacaoProductDTO> dtos = null;
+        dtos = objs.map(Object -> {
+
+
+            Optional<Product> product = productRepository.findById(Long.parseLong(Object[0].toString()));
+
+
+            com.fieldright.fr.entity.dto.avaliacao.AvaliacaoProductDTO result =  com.fieldright.fr.entity.dto.avaliacao.AvaliacaoProductDTO
+                    .builder()
+                    .productName(product.get().getName())
+                    .productId(product.get().getId())
+                    .estrela(BigDecimal.valueOf(Double.valueOf(String.valueOf(Object[1]))))
+                    .avaliadores(new HashSet<>())
+                    .build();
+
+            List<Object[]> objsAvaliador = avaliacaoProductRepository.findUserByProuct(product.get().getId());
+
+            for(Object[] objects : objsAvaliador){
+
+                result.getAvaliadores().add(AvaliadorDTO
+                        .builder()
+                                .id(Long.parseLong(String.valueOf(objects[0])))
+                                .firstName(String.valueOf(objects[1]))
+                                .lastName(String.valueOf(objects[2]))
+                                .avatar(String.valueOf(objects[3]))
+                                .estrela(BigDecimal.valueOf(Double.parseDouble(String.valueOf(objects[4]))))
+                        .build());
+
+            }
+
+            return  result;
+
+        });
+        return new Response.Builder()
+                .withStatus(HttpStatus.OK)
+                .withData(dtos)
+                .withErrors(null)
+                .build();
+
+
+
+    }
+
+    @Override
+    public Response findAvaliacaoProduct(Long productId, Pageable pageable) {
+
+        Page<Object[]> objs = avaliacaoProductRepository.findAvaliacaoByProduto(productId,pageable);
+        Page<com.fieldright.fr.entity.dto.avaliacao.AvaliacaoProductDTO> dtos = null;
+        dtos = objs.map(Object -> {
+
+
+            Optional<Product> product = productRepository.findById(Long.parseLong(Object[0].toString()));
+
+            com.fieldright.fr.entity.dto.avaliacao.AvaliacaoProductDTO result =  com.fieldright.fr.entity.dto.avaliacao.AvaliacaoProductDTO
+                    .builder()
+                    .productName(product.get().getName())
+                    .productId(product.get().getId())
+                    .estrela(BigDecimal.valueOf(Double.valueOf(String.valueOf(Object[1]))))
+                    .avaliadores(new HashSet<>())
+                    .build();
+
+            List<Object[]> objsAvaliador = avaliacaoProductRepository.findUserByProuct(product.get().getId());
+
+            for(Object[] objects : objsAvaliador){
+
+                result.getAvaliadores().add(AvaliadorDTO
+                        .builder()
+                        .id(Long.parseLong(String.valueOf(objects[0])))
+                        .firstName(String.valueOf(objects[1]))
+                        .lastName(String.valueOf(objects[2]))
+                        .avatar(String.valueOf(objects[3]))
+                        .estrela(BigDecimal.valueOf(Double.parseDouble(String.valueOf(objects[4]))))
+                        .build());
+
+            }
+
+            return result;
+
+        });
+        return new Response.Builder()
+                .withStatus(HttpStatus.OK)
+                .withData(dtos)
+                .withErrors(null)
+                .build();
     }
 
 }

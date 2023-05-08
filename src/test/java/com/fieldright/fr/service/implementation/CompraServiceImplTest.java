@@ -109,6 +109,9 @@ public class CompraServiceImplTest {
         Endereco enderecoLoja = geraEndereco("Floripa");
         CarrinhoDTO carrinhoDTO = umCarrinhoDTOCom(umaCompraDTOCom(enderecoEntrega));
         Product product = umProdutoCom(1L, 25.0);
+
+
+
         Vendedor vendedor = umVendedorCom(enderecoLoja, false);
         geraTabelaFrete(50.0, 150.0, new BigDecimal(47));
         when(productService.internalFindById(anyLong())).thenReturn(product);
@@ -129,6 +132,7 @@ public class CompraServiceImplTest {
         geraTabelaFrete(50.0, 150.0, new BigDecimal(47));
         when(productService.internalFindById(anyLong())).thenReturn(product);
         when(userService.internalFindUserById(anyLong())).thenReturn(vendedor);
+
 
         Response<BigDecimal> frete = compraService.calculeFrete(carrinhoDTO);
 
@@ -164,7 +168,7 @@ public class CompraServiceImplTest {
         usuarioByIdMock(2, new Vendedor());
         when(productService.internalFindById(Mockito.anyLong())).thenReturn(umProdutoCom(BigDecimal.ONE, "Banana", 2, 55));
 
-        Response<String> response = compraService.newCompra(umCarrinhoDTOCom(umaCompraDTOCom(new Endereco(), BigDecimal.valueOf(100), 55)), umUsuarioAutenticadoCom(1L), "BRA");
+        Response<String> response = compraService.newCompra(umCarrinhoDTOCom(umaCompraDTOCom(new Endereco(), BigDecimal.valueOf(438.9), 55)), umUsuarioAutenticadoCom(1L), "BRA");
 
         Assert.assertEquals(1, response.getErrors().size());
         Assert.assertEquals("Não foi possível realizar a compra pois o valor a ser pago diverge do valor que precisa ser pago no produto: Banana", response.getErrors().get(0));
@@ -347,6 +351,7 @@ public class CompraServiceImplTest {
         CarrinhoDTO carrinhoDTO = new CarrinhoDTO();
         carrinhoDTO.setCompras(Arrays.asList(compraDTOS));
         carrinhoDTO.setFormaPagamento(compraDTOS[0].getFormaPagamento());
+        carrinhoDTO.setVlTotal(compraDTOS[0].getVlPago());
         return carrinhoDTO;
     }
 
@@ -364,6 +369,8 @@ public class CompraServiceImplTest {
         compraDTO.setQtdComprada(4);
         compraDTO.setEnderecoEntrega(enderecoEntrega);
         compraDTO.setDistanciaEntrega("15 km");
+
+        compraDTO.setVlPago(BigDecimal.valueOf(31.92));
         return compraDTO;
     }
 

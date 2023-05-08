@@ -15,4 +15,7 @@ public interface PromocaoProductService {
 	
 	Response<Page<ProductDTO>> findPromotionProducts(long productId, Pageable pageable);
 
+
+	Response<Page<ProductDTO>> findPromotionVededor(long vendedor, Pageable pageable);
+
 }

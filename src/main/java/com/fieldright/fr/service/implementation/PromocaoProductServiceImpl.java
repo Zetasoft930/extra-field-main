@@ -61,7 +61,25 @@ public class PromocaoProductServiceImpl implements PromocaoProductService {
 	                .withErrors(null)
 	                .build();
 	}
-	
-	
+
+	@Override
+	public Response<Page<ProductDTO>> findPromotionVededor(long vendedor, Pageable pageable) {
+		Page<Product> products=null;
+		Page<ProductDTO> dtos=null;
+		products = productRepository.findPromotionVendedor(vendedor, pageable);
+
+		dtos = products.map(product -> {
+			ProductDTO dto= productMapper.toProductDTO(product);
+			dto.setPromotioPrice(productServiceImpl.gePriceToSell(product.getId()));
+			dto.setPercentage(productServiceImpl.gePercentage(product.getId()));
+			return dto;
+		});
+		return new Response.Builder()
+				.withStatus(HttpStatus.OK)
+				.withData(dtos)
+				.withErrors(null)
+				.build();
+	}
+
 
 }

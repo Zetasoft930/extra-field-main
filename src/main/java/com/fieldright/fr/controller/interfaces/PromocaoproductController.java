@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fieldright.fr.entity.dto.DepoimentoDTO;
@@ -28,4 +29,8 @@ public interface PromocaoproductController {
 	 @ApiOperation(value = "Get Promotion by date and product", notes = "Este endpoint deve ser utilizado para recuperar as promoções")
 		ResponseEntity<Response<Page<ProductDTO>>> getPromotionByDateAndProduct(long productId, Pageable pageable);
 
+
+	@ApiOperation(value = "Get Promotion by date and product", notes = "Este endpoint deve ser utilizado para recuperar as promoções por vendedor")
+	public ResponseEntity<Response<Page<ProductDTO>>> getPromotionByDateAndVendedor(  long vendedorId,
+			Pageable pageable);
 }

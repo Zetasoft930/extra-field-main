@@ -15,6 +15,8 @@ import com.fieldright.fr.service.interfaces.ProductService;
 import lombok.AllArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -108,6 +111,8 @@ public class ProductControllerImpl implements ProductController {
         return new ResponseEntity<>(response, response.getStatus());
     }
 
+
+
     public ResponseEntity<Response<HttpStatus>> evaluate(@RequestBody AvaliacaoProductnNewDTO avaliacao,long lojaId) {
 
         AvaliacaoProduct avaliacaoProduct = new AvaliacaoProduct();
@@ -126,10 +131,42 @@ public class ProductControllerImpl implements ProductController {
         return new ResponseEntity<>(response, response.getStatus());
     }*/
 
+    @GetMapping(
+            value = "/evaluate-productAndUser"
+    )
 	@Override
-	public AvaliacaoProductDTO getProductAvaliation(long productId, long avaliadorId) {
-		return productService.findAvaliacaoProductByProductAndAvaliador(productId, avaliadorId);
+	public Response getProductAvaliation(@RequestParam(required = true,name = "productId") long productId,
+                                                    @RequestParam(required = true,name = "avaliadorId") long avaliadorId) {
+
+        AvaliacaoProductDTO result=  productService.findAvaliacaoProductByProductAndAvaliador(productId, avaliadorId);
+
+        return  new Response.Builder()
+                .withData(result)
+                .withStatus(HttpStatus.OK)
+                .withErrors(new ArrayList<>())
+                .build();
+
 	}
+
+    @GetMapping(
+            value = "/evaluate"
+    )
+    @Override
+    public Response getEvaluate(Pageable pageable){
+
+        return productService.findAvaliacaoProduct( pageable);
+
+    }
+
+    @GetMapping(
+            value = "/evaluate-product"
+    )
+    @Override
+    public Response getEvaluate(@RequestParam(name = "productId",required = true) Long productId,Pageable pageable){
+
+        return productService.findAvaliacaoProduct(productId, pageable);
+
+    }
 
 	 @Override
 	    @PostMapping(

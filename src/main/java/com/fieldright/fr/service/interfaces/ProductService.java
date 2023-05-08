@@ -66,4 +66,7 @@ public interface ProductService {
 
     List<Product> findStockEmBaixoByUserLoja();
 
+    Response findAvaliacaoProduct(Pageable pageable);
+
+    Response findAvaliacaoProduct(Long productId,Pageable pageable);
 }

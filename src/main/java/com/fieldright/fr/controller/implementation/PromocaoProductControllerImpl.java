@@ -48,9 +48,21 @@ public class PromocaoProductControllerImpl implements PromocaoproductController{
 	    )
 	public ResponseEntity<Response<Page<ProductDTO>>> getPromotionByDateAndProduct(
 			@RequestParam(name = "productId", defaultValue = "0") final long productId, Pageable pageable) {
+
 		Response<Page<ProductDTO>> response = productService.findPromotionProducts(productId, pageable);
 		return new ResponseEntity<>(response, response.getStatus());
 	}
-	
+
+	@Override
+	@GetMapping(
+			value = "/promotion-store"
+	)
+	public ResponseEntity<Response<Page<ProductDTO>>> getPromotionByDateAndVendedor(
+			@RequestParam(name = "vendedorId",defaultValue = "0") long vendedorId,
+			Pageable pageable) {
+
+		Response<Page<ProductDTO>> response = productService.findPromotionVededor(vendedorId, pageable);
+		return new ResponseEntity<>(response, response.getStatus());
+	}
 	
 }
