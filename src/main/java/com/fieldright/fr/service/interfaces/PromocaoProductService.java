@@ -9,6 +9,8 @@ import com.fieldright.fr.entity.dto.ProductDTO;
 import com.fieldright.fr.entity.dto.PromocaoProductDTO;
 import com.fieldright.fr.response.Response;
 
+import java.time.LocalDateTime;
+
 public interface PromocaoProductService {
 	
 	PromocaoProductDTO save(PromocaoProduct product);
@@ -17,5 +19,7 @@ public interface PromocaoProductService {
 
 
 	Response<Page<ProductDTO>> findPromotionVededor(long vendedor, Pageable pageable);
+
+	public Response<Page<ProductDTO>> findPromotionProducts(long productId, LocalDateTime date_start, LocalDateTime date_end, Pageable pageable);
 
 }

@@ -469,7 +469,7 @@ public class ProductServiceImpl implements ProductService {
 				productDTO.setPeso(Double.parseDouble(colunas.get("peso")));
 				productDTO.setPesoCubado(Double.parseDouble(colunas.get("pesoCubado")));
 				productDTO.setPrice(new BigDecimal((colunas.get("price"))));
-				productDTO.setQuantityAvailable(Integer.parseInt(colunas.get("quantityAvailable")));
+				productDTO.setQuantityAvailable(BigDecimal.valueOf(Double.parseDouble(colunas.get("quantityAvailable"))));
 				productDTO.setTpPreparacaoDias(Integer.parseInt(colunas.get("tpPreparacaoDias")));
 				productDTO.setTpPreparacaoHoras(Integer.parseInt(colunas.get("tpPreparacaoHoras")));
 				productDTO.setTpPreparacaoMinutos(Integer.parseInt(colunas.get("tpPreparacaoMinutos")));

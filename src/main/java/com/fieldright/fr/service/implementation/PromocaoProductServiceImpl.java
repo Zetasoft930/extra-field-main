@@ -1,6 +1,7 @@
 package com.fieldright.fr.service.implementation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -67,6 +68,25 @@ public class PromocaoProductServiceImpl implements PromocaoProductService {
 		Page<Product> products=null;
 		Page<ProductDTO> dtos=null;
 		products = productRepository.findPromotionVendedor(vendedor, pageable);
+
+		dtos = products.map(product -> {
+			ProductDTO dto= productMapper.toProductDTO(product);
+			dto.setPromotioPrice(productServiceImpl.gePriceToSell(product.getId()));
+			dto.setPercentage(productServiceImpl.gePercentage(product.getId()));
+			return dto;
+		});
+		return new Response.Builder()
+				.withStatus(HttpStatus.OK)
+				.withData(dtos)
+				.withErrors(null)
+				.build();
+	}
+
+	@Override
+	public Response<Page<ProductDTO>> findPromotionProducts(long productId, LocalDateTime date_start, LocalDateTime date_end, Pageable pageable) {
+		Page<Product> products=null;
+		Page<ProductDTO> dtos=null;
+		products = productRepository.findPromotionProducts(productId,date_start,date_end, pageable);
 
 		dtos = products.map(product -> {
 			ProductDTO dto= productMapper.toProductDTO(product);

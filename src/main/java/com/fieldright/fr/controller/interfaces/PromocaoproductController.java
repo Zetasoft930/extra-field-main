@@ -1,6 +1,7 @@
 package com.fieldright.fr.controller.interfaces;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,8 +27,10 @@ public interface PromocaoproductController {
 	    @ResponseStatus(HttpStatus.CREATED)
 	 PromocaoProductDTO create(PromocaoProductDTO dto);
 
+	@ApiOperation(value = "Get Promotion by product", notes = "Este endpoint deve ser utilizado para recuperar as promoções")
+	public ResponseEntity<Response<Page<ProductDTO>>> getPromotionByProduto(final long productId, Pageable pageable);
 	 @ApiOperation(value = "Get Promotion by date and product", notes = "Este endpoint deve ser utilizado para recuperar as promoções")
-		ResponseEntity<Response<Page<ProductDTO>>> getPromotionByDateAndProduct(long productId, Pageable pageable);
+		ResponseEntity<Response<Page<ProductDTO>>> getPromotionByDateAndProduct(long productId, LocalDateTime date_end, LocalDateTime date_start, Pageable pageable);
 
 
 	@ApiOperation(value = "Get Promotion by date and product", notes = "Este endpoint deve ser utilizado para recuperar as promoções por vendedor")

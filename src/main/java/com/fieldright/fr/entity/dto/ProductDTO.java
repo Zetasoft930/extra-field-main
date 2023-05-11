@@ -34,7 +34,7 @@ public class ProductDTO {
     private int tpPreparacaoHoras;
     private Endereco enderecoLoja;
     private int tpPreparacaoMinutos;
-    private Integer quantityAvailable;
+    private BigDecimal quantityAvailable;
     @NotNull(message = "Obrigatório informar o peso do produto (kg)")
     private double peso;//kg
     @NotNull(message = "Obrigatório informar a altura do produto (cm)")

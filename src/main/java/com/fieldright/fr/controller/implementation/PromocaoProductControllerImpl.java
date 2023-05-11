@@ -1,9 +1,11 @@
 package com.fieldright.fr.controller.implementation;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +23,8 @@ import com.fieldright.fr.service.interfaces.PromocaoProductService;
 import com.fieldright.fr.util.mapper.PromocaoProductMapper;
 
 import lombok.AllArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @CrossOrigin
 @RestController
@@ -44,14 +48,31 @@ public class PromocaoProductControllerImpl implements PromocaoproductController{
 
 	@Override
 	@GetMapping(
-	            value = "/promotion"
+	            value = "/promotion-product"
 	    )
-	public ResponseEntity<Response<Page<ProductDTO>>> getPromotionByDateAndProduct(
+	public ResponseEntity<Response<Page<ProductDTO>>> getPromotionByProduto(
 			@RequestParam(name = "productId", defaultValue = "0") final long productId, Pageable pageable) {
 
 		Response<Page<ProductDTO>> response = productService.findPromotionProducts(productId, pageable);
 		return new ResponseEntity<>(response, response.getStatus());
 	}
+
+	@Override
+	@GetMapping(
+			value = "/promotion"
+	)
+	public ResponseEntity<Response<Page<ProductDTO>>> getPromotionByDateAndProduct(
+			@RequestParam(name = "productId", defaultValue = "0") final long productId,
+			@RequestParam(name = "date_end", required = true)
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date_end,
+			@RequestParam(name = "date_start", required = true)
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date_start,
+			Pageable pageable) {
+
+		Response<Page<ProductDTO>> response = productService.findPromotionProducts(productId,date_start,date_end, pageable);
+		return new ResponseEntity<>(response, response.getStatus());
+	}
+
 
 	@Override
 	@GetMapping(

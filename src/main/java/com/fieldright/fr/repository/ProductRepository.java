@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -85,6 +86,10 @@ Page<Product> findMaisVendidosFilters(long loja, LocalDate searchDate, String ca
 @Query(value = "select p.* from promocao_product pp join product p on pp.product_id = p.id  \r\n"
 		+ "where current_date between pp.start_date and pp.end_date and (pp.product_id = ?1 or ?1 = 0)", nativeQuery = true)
 Page<Product> findPromotionProducts(long productId, Pageable pageable);
+
+	@Query(value = "select p.* from promocao_product pp join product p on pp.product_id = p.id  \r\n"
+			+ "where pp.start_date between ?2 and ?3 and (pp.product_id = ?1 or ?1 = 0) ", nativeQuery = true)
+	Page<Product> findPromotionProducts(long productId, LocalDateTime date_start, LocalDateTime date_end, Pageable pageable);
 
 @Query(value = "select p.* from product p \n" +
 		"where p.min_stock >= (p.quantity_available - p.qtd_reservada)\n" +
