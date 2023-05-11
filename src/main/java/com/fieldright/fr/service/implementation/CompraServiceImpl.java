@@ -494,7 +494,10 @@ public class CompraServiceImpl implements CompraService {
 
 		dtos = compras.map(compra -> {
 
-			return CompraMapper.toCompraDTO(compra);
+			CompraDTO compraDTO =  CompraMapper.toCompraDTO(compra);
+			compraDTO.setStatus(status.getText());
+
+			return compraDTO;
 
 		});
 

@@ -65,8 +65,7 @@ public interface CompraController {
             notes = "Esse endpoint serve para mostrar os pedidos de um usuario unico/loja. deve ser informado o id do usuario e status da venda."
     )
 
-
     Response getPedidoByUserAndStatus(Long userIdLoja,
-                                      String status,
+                                      Long status,
                                       Pageable pageable);
 }

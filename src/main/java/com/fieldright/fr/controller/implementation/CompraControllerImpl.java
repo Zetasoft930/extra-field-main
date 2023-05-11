@@ -19,6 +19,7 @@ import javax.validation.Valid;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 @CrossOrigin
@@ -82,8 +83,22 @@ public class CompraControllerImpl implements CompraController {
     @GetMapping("/pedido")
     @Override
     public Response getPedidoByUserAndStatus(@RequestParam(required = true, name = "userId") Long userIdLoja,
-                                             @RequestParam(required = true, name = "status", defaultValue = "NOVA") String status,
-                                             Pageable pageable) {
-        return compraService.getPedidoByUserAndStatus(userIdLoja, StatusVenda.valueOf(status),pageable);
+                                             @RequestParam(required = true, name = "status", defaultValue = "1") Long status,
+                                             Pageable pageable){
+       try
+       {
+           StatusVenda statusVenda =  StatusVenda.toEnum(status);
+
+           return compraService.getPedidoByUserAndStatus(userIdLoja, statusVenda, pageable);
+
+       }catch (Exception e){
+
+           return new Response.Builder()
+                   .withStatus(HttpStatus.BAD_REQUEST)
+                   .withData(null)
+                   .withErrors(Arrays.asList(e.getMessage()))
+                   .build();
+       }
+
     }
 }
