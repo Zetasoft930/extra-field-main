@@ -28,7 +28,7 @@ public interface AvaliacaoProductRepository extends JpaRepository<AvaliacaoProdu
 	@Query(value = "select p.id,sum(ap.estrelas)/count(ap.id) estrelas\n" +
 			"from avaliacao_product ap " +
 			"\tinner join product p on p.id =ap.product_id " +
-			" where p.id = ?" +
+			" where p.id = ?1 " +
 			"group by p.id " +
 			"order by p.name ",nativeQuery = true)
 	Page<Object[]> findAvaliacaoByProduto(Long productId, Pageable pageable);
@@ -37,6 +37,6 @@ public interface AvaliacaoProductRepository extends JpaRepository<AvaliacaoProdu
 	@Query(value = "select u.id,u.first_name ,u.last_name ,u.avatar ,ap.estrelas \n" +
 			"from usuario u \n" +
 			"\tinner join avaliacao_product ap on ap.avaliador_id  = u.id \n" +
-			"where ap.product_id  = ?",nativeQuery = true)
+			"where ap.product_id  = ?1 ",nativeQuery = true)
 	List<Object[]> findUserByProuct(Long productId);
 }
