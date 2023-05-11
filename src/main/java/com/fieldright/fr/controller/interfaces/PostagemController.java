@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +28,10 @@ public interface PostagemController {
     @ResponseStatus(HttpStatus.CREATED)
     public Response addComentario(Long id, String comentario, Authentication authentication);
 
+    @ApiOperation(value = "findComentario", notes = "Mostra  comentario da postagem por id do comentario")
+    @ResponseStatus(HttpStatus.OK)
+    public Response getComentarioById(Long id,
+                                      Authentication authentication);
     @ApiOperation(value = "editStausComentario", notes = "Alterar o status do comentario na postagem")
     @ResponseStatus(HttpStatus.OK)
     public Response editStatusComentario(Long idComentario, Long status);

@@ -89,6 +89,17 @@ class PostagemControllerImpl implements PostagemController{
         return comentarioService.create(modelo);
 
     }
+    @GetMapping(value = "/findComentario/{id}")
+    @Override
+    public Response getComentarioById(@PathVariable(required = true) Long id,
+                                  Authentication authentication) {
+
+        JwtUser jwtUser = (JwtUser) authentication.getPrincipal();
+
+
+        return comentarioService.findById(id);
+
+    }
 
     @PostMapping(value = "/editStatusComentario")
     @Override

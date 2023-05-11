@@ -1,10 +1,12 @@
 package com.fieldright.fr.service.implementation;
 
 import com.fieldright.fr.entity.Comentario;
+import com.fieldright.fr.entity.Usuario;
 import com.fieldright.fr.entity.dto.ComentarioDTO;
 import com.fieldright.fr.repository.ComentarioRepository;
 import com.fieldright.fr.response.Response;
 import com.fieldright.fr.service.interfaces.ComentarioService;
+import com.fieldright.fr.service.interfaces.UserService;
 import com.fieldright.fr.util.enums.StatusComentario;
 import com.fieldright.fr.util.mapper.ComentarioMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class ComentarioServiceImpl implements ComentarioService {
 	
 	@Autowired
 	private ComentarioMapper ComentarioMapper;
+
+	@Autowired
+	private UserService userService;
 	@Override
 	public Response<ComentarioDTO> create(Comentario Comentario) {
 		ComentarioDTO comentarioDTO = ComentarioMapper.toComentarioDTO(ComentarioRepository.save(Comentario));
@@ -90,6 +95,39 @@ public class ComentarioServiceImpl implements ComentarioService {
 			                .build();
 	}
 
-	
+	@Override
+	public Response findById(Long id) {
+
+		Optional<Comentario> optional = ComentarioRepository.findById(id);
+		ComentarioDTO dto = null;
+		HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+		if(optional.isPresent())
+		{
+
+			Usuario usuario = userService.internalFindUserById(optional.get().getUsuarioId());
+
+			dto = ComentarioDTO.builder().firstName(usuario.getFirstName())
+					.lastName(usuario.getLastName())
+					.avatar(usuario.getAvatar())
+					.tipoUsuario(usuario.getPerfil())
+					.createdAt(optional.get().getCreatedAt().toString())
+					.comentario(optional.get().getComentario())
+					.id(optional.get().getId())
+					.usuarioId(usuario.getId())
+					.status(optional.get().getStatus().toString()).build();
+
+			httpStatus = HttpStatus.OK;
+		}
+
+
+		return new Response.Builder()
+				.withStatus(httpStatus)
+				.withData(dto)
+				.withErrors(null)
+				.build();
+	}
+
+
+
 
 }

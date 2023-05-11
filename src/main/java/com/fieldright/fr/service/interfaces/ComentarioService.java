@@ -17,4 +17,6 @@ public interface ComentarioService {
 	 
 		Response<Page<ComentarioDTO>> findByFilter(long usuarioId, String status, LocalDate startdate,
 				LocalDate endDate, Pageable pageable);
+
+    Response findById(Long id);
 }
